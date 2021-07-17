@@ -1,7 +1,8 @@
-.txt
-.csv
+*.txt
+*.csv
 /.vscode/
-.png
-.jpg
-.model
-.m
+*.png
+*.jpg
+*.model
+*.m
+
