@@ -19,16 +19,16 @@ def swapRGB2BGR(rgb):
 '''
 매개변수가 3개여야 한다.
 '''
-# if len(sys.argv) != 3:
-#     print(
-#         "Give the path to the trained shape predictor model as the first "
-#         "argument and then the directory containing the facial images.\n"
-#         "For example, if you are in the python_examples folder then "
-#         "execute this program by running:\n"
-#         "    ./face_landmark_detection.py shape_predictor_68_face_landmarks.dat ../examples/faces\n"
-#         "You can download a trained facial shape predictor from:\n"
-#         "    http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2")
-#     exit()
+if len(sys.argv) != 3:
+    print(
+        "Give the path to the trained shape predictor model as the first "
+        "argument and then the directory containing the facial images.\n"
+        "For example, if you are in the python_examples folder then "
+        "execute this program by running:\n"
+        "    ./face_landmark_detection.py shape_predictor_68_face_landmarks.dat ../examples/faces\n"
+        "You can download a trained facial shape predictor from:\n"
+        "    http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2")
+    exit()
 
 # 랜드마크 파일 경로
 predictor_path = sys.argv[1]
@@ -44,7 +44,7 @@ predictor = dlib.shape_predictor(predictor_path)
 cv2.namedWindow('Face')
 
 # 두번째 매개변수로 지정한 폴더를 싹다 뒤져서 jpg파일을 찾는다. 
-for f in glob.glob(os.path.join(faces_folder_path, "*.jpg")):
+for f in glob.glob(os.path.join("C:/Users/marbi/0.python/self_study/210727", "*.jpg")):
     print("Processing file: {}".format(f))
     
     # 파일에서 이미지 불러오기

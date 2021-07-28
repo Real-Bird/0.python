@@ -25,9 +25,9 @@ def detect(gray, frame):
         # 랜드마크 포인트 지정
         landmarks = np.matrix([[p.x,p.y] for p in predictor(frame, dlib_rect).parts()])
         # 원하는 포인트 넣음 (현재 전부)
-        #landmarks_display = landmarks[0:68]
-        # 턱, 코
-        landmarks_display = landmarks[JAWLINE_POINTS, LEFT_EYE_POINTS]
+        landmarks_display = landmarks[0:68]
+        # 눈만
+        #landmarks_display = landmarks[RIGHT_EYE_POINTS, LEFT_EYE_POINTS]
 
         # 포인트 출력
         for idx, point in enumerate(landmarks_display):

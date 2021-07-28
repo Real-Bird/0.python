@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 # Cascades 디렉토리의 haarcascade_frontalface_default.xml 파일을 Classifier로 사용
 # faceCascade는 이미 학습 시켜놓은 XML 포멧이고, 이를 불러와서 변수에 저장함.
-faceCascade = cv2.CascadeClassifier('C:/Users/marbi/AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+faceCascade = cv2.CascadeClassifier('D:/python/OCV/cascades/haarcascade_frontalface_default.xml')
 
 # 비디오의 setting을 준비함.
 cap = cv2.VideoCapture(0) #0번이 내장카메라, 1번이 외장카메라
@@ -38,7 +38,7 @@ while True:
         roi_gray = gray[y:y+h, x:x+w] #눈,입을 검출할 때 이용
         roi_color = img[y:y+h, x:x+w] #눈,입등을 표시할 때 이용
     #영상에 img 값을 출력
-    cv2.imshow('video',img) # video라는 이름으로 출력
+    cv2.imshow('Vedio',img) # video라는 이름으로 출력
     k = cv2.waitKey(1) & 0xff #time값이 0이면 무한 대기, waitKey는 키가 입력 받아 질때까지 기다리는 시간을 의미한다.
     #FF는 끝의 8bit만을 이용한다는 뜻으로 ASCII 코드의 0~255값만 이용하겠다는 의미로 해석됨. (NumLock을 켰을때 또한 )
     if k == 27: # press 'ESC' to quit # ESC를 누르면 종료
