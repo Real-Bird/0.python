@@ -11,3 +11,5 @@
 *.docx
 *.json
 *.dat
+*.prototxt
+*.caffemodel
