@@ -1,106 +1,98 @@
-import cv2 as cv
+# fashion_pose.py : MPII를 사용한 신체부위 검출
+import cv2
 
-BODY_PARTS = {
-                "손목": 0,
-                "엄지0": 1, "엄지1": 2, "엄지2": 3, "엄지3": 4,
-                "검지0": 5, "검지1": 6, "검지2": 7, "검지3": 8,
-                "중지0": 9, "중지1": 10, "중지2": 11, "중지3": 12,
-                "약지0": 13, "약지1": 14, "약지2": 15, "약지3": 16,
-                "소지0": 17, "소지1": 18, "소지2": 19, "소지3": 20,
-            }
+# MPII에서 각 파트 번호, 선으로 연결될 POSE_PAIRS
+BODY_PARTS = { "Head": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
+                "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
+                "RAnkle": 10, "LHip": 11, "LKnee": 12, "LAnkle": 13, "Chest": 14,
+                "Background": 15 }
 
-POSE_PAIRS = [["손목", "엄지0"], ["엄지0", "엄지1"],
-                ["엄지1", "엄지2"], ["엄지2", "엄지3"],
-                ["손목", "검지0"], ["검지0", "검지1"],
-                ["검지1", "검지2"], ["검지2", "검지3"],
-                ["손목", "중지0"], ["중지0", "중지1"],
-                ["중지1", "중지2"], ["중지2", "중지3"],
-                ["손목", "약지0"], ["약지0", "약지1"],
-                ["약지1", "약지2"], ["약지2", "약지3"],
-                ["손목", "소지0"], ["소지0", "소지1"],
-                ["소지1", "소지2"], ["소지2", "소지3"]]
-
-
-# BODY_PARTS = {
-#                 "Wrist": 0,
-#                 "ThumbMetacarpal": 1, "ThumbProximal": 2, "ThumbMiddle": 3, "ThumbDistal": 4,
-#                 "IndexFingerMetacarpal": 5, "IndexFingerProximal": 6, "IndexFingerMiddle": 7, "IndexFingerDistal": 8,
-#                 "MiddleFingerMetacarpal": 9, "MiddleFingerProximal": 10, "MiddleFingerMiddle": 11, "MiddleFingerDistal": 12,
-#                 "RingFingerMetacarpal": 13, "RingFingerProximal": 14, "RingFingerMiddle": 15, "RingFingerDistal": 16,
-#                 "LittleFingerMetacarpal": 17, "LittleFingerProximal": 18, "LittleFingerMiddle": 19, "LittleFingerDistal": 20,
-#             }
-
-# POSE_PAIRS = [["Wrist", "ThumbMetacarpal"], ["ThumbMetacarpal", "ThumbProximal"],
-#                ["ThumbProximal", "ThumbMiddle"], ["ThumbMiddle", "ThumbDistal"],
-#                ["Wrist", "IndexFingerMetacarpal"], ["IndexFingerMetacarpal", "IndexFingerProximal"],
-#                ["IndexFingerProximal", "IndexFingerMiddle"], ["IndexFingerMiddle", "IndexFingerDistal"],
-#                ["Wrist", "MiddleFingerMetacarpal"], ["MiddleFingerMetacarpal", "MiddleFingerProximal"],
-#                ["MiddleFingerProximal", "MiddleFingerMiddle"], ["MiddleFingerMiddle", "MiddleFingerDistal"],
-#                ["Wrist", "RingFingerMetacarpal"], ["RingFingerMetacarpal", "RingFingerProximal"],
-#                ["RingFingerProximal", "RingFingerMiddle"], ["RingFingerMiddle", "RingFingerDistal"],
-#                ["Wrist", "LittleFingerMetacarpal"], ["LittleFingerMetacarpal", "LittleFingerProximal"],
-#                ["LittleFingerProximal", "LittleFingerMiddle"], ["LittleFingerMiddle", "LittleFingerDistal"]]
-
-
-threshold = 0.1
-
-protoFile = "pose_deploy.prototxt"
-weightsFile = "pose_iter_102000.caffemodel"
-
+POSE_PAIRS = [ ["Head", "Neck"], ["Neck", "RShoulder"], ["RShoulder", "RElbow"],
+                ["RElbow", "RWrist"], ["Neck", "LShoulder"], ["LShoulder", "LElbow"],
+                ["LElbow", "LWrist"], ["Neck", "Chest"], ["Chest", "RHip"], ["RHip", "RKnee"],
+                ["RKnee", "RAnkle"], ["Chest", "LHip"], ["LHip", "LKnee"], ["LKnee", "LAnkle"] ]
+    
+# 각 파일 path
+protoFile = "D:/Program Files/openpose-master/models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
+weightsFile = "D:/Program Files/openpose-master/models/pose/mpi/pose_iter_160000.caffemodel"
+ 
+# 위의 path에 있는 network 불러오기
 net = cv.dnn.readNetFromCaffe(protoFile, weightsFile)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-cap = cv.VideoCapture(0, cv.CAP_DSHOW)
+# 이미지 읽어오기
+image = cv2.imread("man.jpg")
 
-inputHeight = 368
-inputWidth = 368
-inputScale = 1.0/255
+# frame.shape = 불러온 이미지에서 height, width, color 받아옴
+imageHeight, imageWidth, _ = image.shape
+ 
+# network에 넣기위해 전처리
+inpBlob = cv2.dnn.blobFromImage(image, 1.0 / 255, (imageWidth, imageHeight), (0, 0, 0), swapRB=False, crop=False)
+ 
+# network에 넣어주기
+net.setInput(inpBlob)
 
-while cv.waitKey(1) < 0:
-    hasFrame, frame = cap.read()
-   # frame = cv.resize(frame, dsize=(320, 240), interpolation=cv.INTER_AREA)
+# 결과 받아오기
+output = net.forward()
 
-    if not hasFrame:
-        cv.waitKey()
-        break
+# output.shape[0] = 이미지 ID, [1] = 출력 맵의 높이, [2] = 너비
+H = output.shape[2]
+W = output.shape[3]
+print("이미지 ID : ", len(output[0]), ", H : ", output.shape[2], ", W : ",output.shape[3]) # 이미지 ID
 
-    frameWidth = frame.shape[1]
-    frameHeight = frame.shape[0]
-    inp = cv.dnn.blobFromImage(frame, inputScale, (inputWidth, inputHeight), (0, 0, 0), swapRB=False, crop=False)
+# 키포인트 검출시 이미지에 그려줌
+points = []
+# for i in range(2):
+# 해당 신체부위 신뢰도 얻음.
+probMap1 = output[0, 2, :, :]
+probMap2 = output[0, 5, :, :]
+
+# global 최대값 찾기
+minVal1, prob1, minLoc1, point1 = cv2.minMaxLoc(probMap1)
+minVal2, prob2, minLoc2, point2 = cv2.minMaxLoc(probMap2)
+# 원래 이미지에 맞게 점 위치 변경
+x1 = (imageWidth * point1[0]) / W
+y1 = (imageHeight * point1[1]) / H
+x2 = (imageWidth * point2[0]) / W
+y2 = (imageHeight * point2[1]) / H
+
+# 키포인트 검출한 결과가 0.1보다 크면(검출한곳이 위 BODY_PARTS랑 맞는 부위면) points에 추가, 검출했는데 부위가 없으면 None으로    
+if prob1 > 0.1 :    
+    cv2.circle(image, (int(x1), int(y1)), 3, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+    cv2.putText(image, "{}".format(2), (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv2.LINE_AA)
+    points.append((int(x1), int(y1)))
+else :
+    points.append(None)
+if prob2 > 0.1 :
+    cv2.circle(image, (int(x2), int(y2)), 3, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+    cv2.putText(image, "{}".format(5), (int(x2), int(y2)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv2.LINE_AA)
+    points.append((int(x2), int(y2)))
+else :
+    points.append(None)
+
+
+cv2.imshow("Output-Keypoints",image)
+cv2.waitKey(0)
+
+# 이미지 복사
+imageCopy = image
+
+# 각 POSE_PAIRS별로 선 그어줌 (머리 - 목, 목 - 왼쪽어깨, ...)
+# for pair in POSE_PAIRS:
+#     partA = pair[0]             # Head
+#     partA = BODY_PARTS[partA]   # 0
+#     partB = pair[1]             # Neck
+#     partB = BODY_PARTS[partB]   # 1
     
-    net.setInput(inp)
-    out = net.forward()
+#     #print(partA," 와 ", partB, " 연결\n")
+#     if points[partA] and points[partB]:
+#         cv2.line(imageCopy, points[partA], points[partB], (0, 255, 0), 2)
 
-    points = []
-    for i in range(len(BODY_PARTS)):
-        heatMap = out[0, i, :, :]
+#print(partA," 와 ", partB, " 연결\n")
+if points[0] and points[1]:
+    cv2.line(imageCopy, points[0], points[1], (0, 255, 0), 2)
 
-        _, conf, _, point = cv.minMaxLoc(heatMap)
-        x = int((frameWidth * point[0]) / out.shape[3])
-        y = int((frameHeight * point[1]) / out.shape[2])
-
-
-        if conf > threshold:
-            cv.circle(frame, (x, y), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)
-            cv.putText(frame, "{}".format(i), (x, y), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, lineType=cv.LINE_AA)
-            points.append((x, y))
-        else:
-            points.append(None)
-
-
-    for pair in POSE_PAIRS:
-        partFrom = pair[0]
-        partTo = pair[1]
-
-        idFrom = BODY_PARTS[partFrom]
-        idTo = BODY_PARTS[partTo]
-
-        if points[idFrom] and points[idTo]:
-            cv.line(frame, points[idFrom], points[idTo], (0, 255, 0), 1)
-
-    t, _ = net.getPerfProfile()
-    freq = cv.getTickFrequency() / 1000
-    cv.putText(frame, '%.2fms' % (t / freq), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-
-    cv.imshow('OpenPose using OpenCV', frame)
+cv2.imshow("Output-Keypoints",imageCopy)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
