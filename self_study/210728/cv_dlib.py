@@ -3,7 +3,7 @@ import cv2
 import dlib
 
 faceCascade = cv2.CascadeClassifier("D:/python/OCV/cascades/haarcascade_frontalface_alt.xml")
-predictor = dlib.shape_predictor("C:/Users/marbi/0.python/self_study/210727/shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor("D:/jb_python/self_study/210727/shape_predictor_68_face_landmarks.dat")
 
 JAWLINE_POINTS = list(range(0, 17))
 # RIGHT_EYEBROW_POINTS = list(range(17, 22))
@@ -27,7 +27,7 @@ def detect(gray, frame):
         landmarks = np.matrix([[p.x,p.y] for p in predictor(frame, dlib_rect).parts()])
         # 원하는 포인트 넣음 (현재 전부)
         #landmarks_display = landmarks[0:68]
-
+        
         # 양 턱 시작, 턱 끝, 코 끝
         want_point.append(landmarks[JAWLINE_POINTS[0]])
         want_point.append(landmarks[JAWLINE_POINTS[8]])
@@ -35,7 +35,7 @@ def detect(gray, frame):
         want_point.append(landmarks[NOSE_POINTS[3]])
         # 원하는 부위 출력
         landmarks_display = want_point
-
+        
         # 포인트 출력
         for idx, point in enumerate(landmarks_display):
             pos = (point[0, 0], point[0, 1])
@@ -48,7 +48,7 @@ video_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while True:
     # 웹캠 이미지 프레임 화
-    _, frame = video_capture.read()
+    ret, frame = video_capture.read()
     # 좌우 반전
     frame = cv2.flip(frame,1)
     # 그레이스케일 변환
