@@ -149,21 +149,22 @@ def output_keypoints(frame, net, BODY_PARTS):
 def output_keypoints_with_lines(frame, POSE_PAIRS):
     
     # 코와 목 접선
-    if points[4] and points[6]:
+    if points[0] and points[1]:
         #print(f"[linked] {points[0]} <=> {points[1]}")
-        cv.line(frame, points[4], points[6], (0, 255, 0), 3)
+        cv.line(frame, points[0], points[1], (0, 255, 0), 3)
+        print(points[1][1]-points[0][1])
     #else:
         #print(f"[not linked] {part_a} {points[part_a]} <=> {part_b} {points[part_b]}")
 
-    # 목과 오른쪽 어깨 접선
-    # if points[1] and points[2]:
-    #     #print(f"[linked] {points[1]} <=> {points[2]}")
-    #     cv.line(frame, points[1], points[2], (0, 255, 0), 3)
+    #목과 오른쪽 어깨 접선
+    if points[1] and points[2]:
+        #print(f"[linked] {points[1]} <=> {points[2]}")
+        cv.line(frame, points[1], points[2], (0, 255, 0), 3)
 
     # 목과 왼쪽 어깨 접선
-    if points[2] and points[3]:
+    if points[1] and points[3]:
         #print(f"[linked] {points[1]} <=> {points[3]}")
-        cv.line(frame, points[2], points[3], (0, 255, 0), 3)
+        cv.line(frame, points[1], points[3], (0, 255, 0), 3)
 
     # print(points[1][1] - points[0][1])
     return frame
@@ -179,7 +180,7 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     capture = output_keypoints(frame=capture, net=net, BODY_PARTS=BODY_PARTS)
     capture = output_keypoints_with_lines(frame=capture, POSE_PAIRS=POSE_PAIRS)
     cv.imshow("Output_Keypoints", capture)
-    cv.imwrite("parallel.jpg", capture)
+    #cv.imwrite("parallel.jpg", capture)
 
 # 키포인트를 저장할 빈 리스트
 points = []

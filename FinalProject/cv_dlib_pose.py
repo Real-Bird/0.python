@@ -47,8 +47,8 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
 
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv.CASCADE_SCALE_IMAGE)
     # 입력 이미지의 사이즈 정의
-    image_height = 368
-    image_width = 368
+    image_height = 480
+    image_width = 480
 
     # 네트워크에 넣기 위한 전처리
     input_blob = cv.dnn.blobFromImage(frame, 1.0 / 255, (image_width, image_height), (0, 0, 0), swapRB=False, crop=False)
@@ -90,6 +90,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     minVal2, prob2, minLoc2, point2 = cv.minMaxLoc(probMap2)
     minVal3, prob3, minLoc3, point3 = cv.minMaxLoc(probMap3)
     minVal4, prob4, minLoc4, point4 = cv.minMaxLoc(probMap4)
+    
     # 원래 이미지에 맞게 점 위치 변경
     x1 = (frame_width * point1[0]) / out_width
     y1 = (frame_height * point1[1]) / out_height
@@ -164,25 +165,41 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     return frame
 
 def output_keypoints_with_lines(frame, POSE_PAIRS):
-       
-    # 코와 목 접선
-    if points[0] and points[1]:
-        #print(f"[linked] {points[0]} <=> {points[1]}")
-        cv.line(frame, points[0], points[1], (0, 255, 0), 3)
+    
+    #코와 목 접선
+    # if points[0] and points[1]:
+    #     #print(f"[linked] {points[0]} <=> {points[1]}")
+    #     cv.line(frame, points[0], points[1], (0, 255, 0), 3)
     #else:
         #print(f"[not linked] {part_a} {points[part_a]} <=> {part_b} {points[part_b]}")
 
     # 목과 오른쪽 어깨 접선
-    if points[1] and points[2]:
-        #print(f"[linked] {points[1]} <=> {points[2]}")
-        cv.line(frame, points[1], points[2], (0, 255, 0), 3)
+    # if points[1] and points[2]:
+    #     #print(f"[linked] {points[1]} <=> {points[2]}")
+    #     cv.line(frame, points[1], points[2], (0, 255, 0), 3)
 
     # 목과 왼쪽 어깨 접선
-    if points[1] and points[3]:
+    if points[2] and points[3]:
         #print(f"[linked] {points[1]} <=> {points[3]}")
-        cv.line(frame, points[1], points[3], (0, 255, 0), 3)
+        cv.line(frame, points[2], points[3], (0, 255, 0), 3) 
+    
+    cen_jaw_X = (points[4][0] + points[6][0]) // 2
+    cen_jaw_Y = (points[4][1] + points[6][1]) // 2
 
-    # print(points[1][1] - points[0][1])
+    cen_sholder_X = (points[2][0] + points[3][0]) // 2
+    cen_sholder_Y = (points[2][1] + points[3][1]) // 2
+
+    cen_jaw = (cen_jaw_X, cen_jaw_Y)
+    cen_sholder = (cen_sholder_X, cen_sholder_Y)
+    
+    if cen_jaw and cen_sholder:
+        cv.line(frame, cen_jaw, cen_sholder, (0, 0, 255), 3) 
+
+    # 광대 접선
+    if points[4] and points[6]:
+        #print(f"[linked] {points[0]} <=> {points[1]}")
+        cv.line(frame, points[4], points[6], (0, 255, 0), 3)
+
     return frame
 
 def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_PARTS, POSE_PAIRS):
@@ -195,16 +212,18 @@ def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
     # 비디오 읽어오기
-    capture = cv.VideoCapture(0)
-
+    capture = cv.VideoCapture(0, cv.CAP_MSMF)
+    capture.set(cv.CAP_PROP_FPS, 60)
+    
     while True:
         now_frame_boy = capture.get(cv.CAP_PROP_POS_FRAMES)
         total_frame_boy = capture.get(cv.CAP_PROP_FRAME_COUNT)
-
+        print(capture.get(cv.CAP_PROP_POS_FRAMES))
         if now_frame_boy == total_frame_boy:
             break
 
         ret, frame_boy = capture.read()
+        
         frame_boy = cv.flip(frame_boy,1)
         frame_boy = output_keypoints(frame=frame_boy, net=net, threshold=threshold, BODY_PARTS=BODY_PARTS, now_frame=now_frame_boy, total_frame=total_frame_boy)
         frame_boy = output_keypoints_with_lines(frame=frame_boy, POSE_PAIRS=POSE_PAIRS)
