@@ -47,7 +47,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
 
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv.CASCADE_SCALE_IMAGE)
     # 입력 이미지의 사이즈 정의
-    image_height = 480
+    image_height = 640
     image_width = 480
 
     # 네트워크에 넣기 위한 전처리
@@ -105,7 +105,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     # 코 
     if prob1 > 0.1 :    
         cv.circle(frame, (int(x1), int(y1)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        cv.putText(frame, "{}".format(2), (int(x1), int(y1)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{}".format(1), (int(x1), int(y1)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x1), int(y1)))
 
     else:  # [not pointed]
@@ -115,7 +115,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     # 목
     if prob2 > 0.1 :
         cv.circle(frame, (int(x2), int(y2)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        cv.putText(frame, "{}".format(5), (int(x2), int(y2)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{}".format(2), (int(x2), int(y2)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x2), int(y2)))
     else:  # [not pointed]
         points.append(None)
@@ -123,7 +123,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     # 오른쪽 어깨
     if prob3 > 0.1 :    
         cv.circle(frame, (int(x3), int(y3)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        cv.putText(frame, "{}".format(2), (int(x3), int(y3)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{}".format(3), (int(x3), int(y3)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x3), int(y3)))
     else:  # [not pointed]
         points.append(None)
@@ -131,7 +131,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     # 왼쪽 어깨
     if prob4 > 0.1 :    
         cv.circle(frame, (int(x4), int(y4)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        cv.putText(frame, "{}".format(2), (int(x4), int(y4)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{}".format(4), (int(x4), int(y4)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x4), int(y4)))
     else:  # [not pointed]
         points.append(None)
@@ -165,7 +165,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     return frame
 
 def output_keypoints_with_lines(frame, POSE_PAIRS):
-    
+    print(points)
     #코와 목 접선
     # if points[0] and points[1]:
     #     #print(f"[linked] {points[0]} <=> {points[1]}")
@@ -177,29 +177,30 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
     # if points[1] and points[2]:
     #     #print(f"[linked] {points[1]} <=> {points[2]}")
     #     cv.line(frame, points[1], points[2], (0, 255, 0), 3)
+    try:
+        # 목과 왼쪽 어깨 접선
+        if points[2] and points[3]:
+            cv.line(frame, points[2], points[3], (0, 255, 0), 3) 
+        
+        cen_jaw_X = (points[4][0] + points[6][0]) // 2
+        cen_jaw_Y = (points[4][1] + points[6][1]) // 2
 
-    # 목과 왼쪽 어깨 접선
-    if points[2] and points[3]:
-        #print(f"[linked] {points[1]} <=> {points[3]}")
-        cv.line(frame, points[2], points[3], (0, 255, 0), 3) 
-    
-    cen_jaw_X = (points[4][0] + points[6][0]) // 2
-    cen_jaw_Y = (points[4][1] + points[6][1]) // 2
+        cen_sholder_X = (points[2][0] + points[3][0]) // 2
+        cen_sholder_Y = (points[2][1] + points[3][1]) // 2
 
-    cen_sholder_X = (points[2][0] + points[3][0]) // 2
-    cen_sholder_Y = (points[2][1] + points[3][1]) // 2
+        cen_jaw = (cen_jaw_X, cen_jaw_Y)
+        cen_sholder = (cen_sholder_X, cen_sholder_Y)
+        
+        if cen_jaw and cen_sholder:
+            cv.line(frame, cen_jaw, cen_sholder, (0, 0, 255), 3) 
 
-    cen_jaw = (cen_jaw_X, cen_jaw_Y)
-    cen_sholder = (cen_sholder_X, cen_sholder_Y)
-    
-    if cen_jaw and cen_sholder:
-        cv.line(frame, cen_jaw, cen_sholder, (0, 0, 255), 3) 
-
-    # 광대 접선
-    if points[4] and points[6]:
-        #print(f"[linked] {points[0]} <=> {points[1]}")
-        cv.line(frame, points[4], points[6], (0, 255, 0), 3)
-
+        # 광대 접선
+        if points[4] and points[6]:
+            cv.line(frame, points[4], points[6], (0, 255, 0), 3)
+    except (IndexError):
+        pass
+    except (TypeError):
+        pass
     return frame
 
 def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_PARTS, POSE_PAIRS):
@@ -213,12 +214,11 @@ def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_
 
     # 비디오 읽어오기
     capture = cv.VideoCapture(0, cv.CAP_MSMF)
-    capture.set(cv.CAP_PROP_FPS, 60)
     
     while True:
         now_frame_boy = capture.get(cv.CAP_PROP_POS_FRAMES)
         total_frame_boy = capture.get(cv.CAP_PROP_FRAME_COUNT)
-        print(capture.get(cv.CAP_PROP_POS_FRAMES))
+        
         if now_frame_boy == total_frame_boy:
             break
 
@@ -229,7 +229,7 @@ def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_
         frame_boy = output_keypoints_with_lines(frame=frame_boy, POSE_PAIRS=POSE_PAIRS)
         cv.imshow("Output_Keypoints", frame_boy)
 
-        if cv.waitKey(10) == 27:  # esc 입력시 종료
+        if cv.waitKey(1) == 27:  # esc 입력시 종료
             break
 
     capture.release()
