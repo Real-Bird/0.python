@@ -26,20 +26,21 @@ def detect(gray, frame):
         # 랜드마크 포인트 지정
         landmarks = np.matrix([[p.x,p.y] for p in predictor(frame, dlib_rect).parts()])
         # 원하는 포인트 넣음 (현재 전부)
-        #landmarks_display = landmarks[0:68]
+        landmarks_display = landmarks[0:68]
         
         # 양 턱 시작, 턱 끝, 코 끝
-        want_point.append(landmarks[JAWLINE_POINTS[0]])
-        want_point.append(landmarks[JAWLINE_POINTS[8]])
-        want_point.append(landmarks[JAWLINE_POINTS[16]])
-        want_point.append(landmarks[NOSE_POINTS[3]])
+        # want_point.append(landmarks[JAWLINE_POINTS[0]])
+        # want_point.append(landmarks[JAWLINE_POINTS[8]])
+        # want_point.append(landmarks[JAWLINE_POINTS[16]])
+        # want_point.append(landmarks[NOSE_POINTS[3]])
         # 원하는 부위 출력
-        landmarks_display = want_point
+        #landmarks_display = want_point
         
         # 포인트 출력
         for idx, point in enumerate(landmarks_display):
             pos = (point[0, 0], point[0, 1])
-            cv2.circle(frame, pos, 10, color=(0, 255, 255), thickness=-1)
+            cv2.circle(frame, pos, 1, color=(0, 255, 255), thickness=-1)
+            cv2.putText(frame, "{}".format(idx), pos, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv2.LINE_AA)
 
     return frame
 

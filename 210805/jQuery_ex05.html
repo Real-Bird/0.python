@@ -1,0 +1,17 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+ 
+<script> 
+$( function() {
+	 $('button').click(        // 태그 이름이 button인 엘리먼트 클릭 시 아래 실행
+           function() {
+
+               $('#p1').html('<strong>가나다라<br>마바사</strong>');
+
+           }
+	 )
+});
+
+</script></head>
+<body>
+<p id="p1">이 안의  HTML를 바꿉니다.</p>   <button>변경</button> </body></html>

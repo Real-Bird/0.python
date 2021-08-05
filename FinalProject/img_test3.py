@@ -73,6 +73,7 @@ def output_keypoints(frame, net, BODY_PARTS):
     minVal1, prob1, minLoc1, point1 = cv.minMaxLoc(probMap1)
     minVal2, prob2, minLoc2, point2 = cv.minMaxLoc(probMap2)
     minVal3, prob3, minLoc3, point3 = cv.minMaxLoc(probMap3)
+    
     # 원래 이미지에 맞게 점 위치 변경
     x1 = (frame_width * point1[0]) / out_width
     y1 = (frame_height * point1[1]) / out_height
@@ -138,19 +139,29 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
         # 양쪽 어깨 접선
         if points[1] and points[2]:
             cv.line(frame, points[1], points[2], (0, 255, 0), 3) 
+        elif points[0] and points[2]:
+            cv.line(frame, points[0], points[2], (0, 255, 0), 3) 
+        else:
+            cv.line(frame, points[0], points[1], (0, 255, 0), 3) 
+        try:
+            cen_eyes_X = (points[3][0] + points[4][0]) // 2
+            cen_eyes_Y = (points[3][1] + points[4][1]) // 2
+
+            cen_sholder_X = (points[1][0] + points[2][0]) // 2
+            cen_sholder_Y = (points[1][1] + points[2][1]) // 2
+
+            cen_eyes = (cen_eyes_X, cen_eyes_Y)
+            cen_sholder = (cen_sholder_X, cen_sholder_Y)
+            
+            if cen_eyes and cen_sholder:
+                cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3) 
+        except:
+            cen_eyes_X = (points[3][0] + points[4][0]) // 2
+            cen_eyes_Y = (points[3][1] + points[4][1]) // 2
+            cen_eyes = (cen_eyes_X, cen_eyes_Y)
+            if cen_eyes and points[0]:
+                cv.line(frame, cen_eyes, points[0], (0, 0, 255), 3) 
         
-        cen_eyes_X = (points[3][0] + points[4][0]) // 2
-        cen_eyes_Y = (points[3][1] + points[4][1]) // 2
-
-        cen_sholder_X = (points[1][0] + points[2][0]) // 2
-        cen_sholder_Y = (points[1][1] + points[2][1]) // 2
-
-        cen_eyes = (cen_eyes_X, cen_eyes_Y)
-        cen_sholder = (cen_sholder_X, cen_sholder_Y)
-        
-        if cen_eyes and cen_sholder:
-            cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3) 
-
         # 눈꼬리 접선
         if points[3] and points[4]:
             cv.line(frame, points[3], points[4], (0, 255, 0), 3)
@@ -167,14 +178,16 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    cap = cv.imread("./dataset/", cv.IMREAD_COLOR)
+    load_img = "./dataset/corr-samples/"
+    save_img = "./dataset/corr_posture/correct-"
+    for img in os.listdir(load_img):
+        
+        aa = load_img + img
+        cap = cv.imread(aa, cv.IMREAD_COLOR)
 
-    cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
-    cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
-    cv.imshow("demo_photo.jpg", cap)
-    
-    # 저장 시 사용
-    #cv.imwrite("demo_photo.jpg", cap)
+        cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
+        cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
+        cv.imwrite(save_img+img, cap)
 
 # 키포인트를 저장할 빈 리스트
 points = []

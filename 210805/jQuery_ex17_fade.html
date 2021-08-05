@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+	$(function() {
+		$('#down').click( function(){
+		      $('.panel').fadeOut('slow')  ;
+		 }) ;
+	   $('#up').click( function(){
+		      $('.panel').fadeIn('slow')  ;
+		 }) ;
+	});
+</script>
+
+<style type="text/css">
+div.panel, p.flip {
+	width: 557px;	margin: auto;	padding: 5px;
+	text-align: center;	background: #e5eecc;
+	border: solid 1px #c3c3c3;
+}
+div.panel {
+	height: 200px;	
+}
+</style></head>
+<body>
+	<div class="panel">
+	<p> "유엔 사무총장, 한반도 상황 극도로 우려·당혹"연합뉴스 
+ 	트럼프, 엄포용인가 의지 담았나…'화염·분노' 발언 해석 분분연합뉴스 
+ 	'화염과 분노' 트럼프, 이번엔 "美핵무기 어느 때보다 강력"연합뉴스 
+ 	EU, 北 도발 중단 촉구·평화적 방법 통한 한반도 비핵화 요구연합뉴스 
+ 	美언론 "한국인 놀랄만큼 평온…증시 저가매수 기회로 인식
+     	</p>
+	</div>
+	<p class="flip" id="down">여기를 클릭 fadeOut</p>
+	<p class="flip" id="up">여기를 클릭 fadeIn</p>
+</body></html>
+

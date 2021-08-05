@@ -7,29 +7,15 @@ faceCascade = cv.CascadeClassifier("D:/python/OCV/cascades/haarcascade_frontalfa
 predictor = dlib.shape_predictor("D:/jb_python/self_study/210727/shape_predictor_68_face_landmarks.dat")
 
 # 신체 path
-# protoFile_body_25 = "D:/Program Files/openpose-master/models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
-# weightsFile_body_25 = "D:/Program Files/openpose-master/models/pose/mpi/pose_iter_160000.caffemodel"
 protoFile_coco = "D:/Program Files/openpose-master/models/pose/coco/pose_deploy_linevec.prototxt"
 weightsFile_coco = "D:/Program Files/openpose-master/models/pose/coco/pose_iter_440000.caffemodel"
 
 JAWLINE_POINTS = list(range(0, 17))
 BOTH_EYEBROW_POINTS = list(range(17,27))
 NOSE_POINTS = list(range(27, 36))
-RIGHT_EYE_POINTS = list(range(36, 42))
-LEFT_EYE_POINTS = list(range(42, 48))
+BOTH_EYES_POINTS = list(range(36,48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
-
-# body_25에서 각 파트 번호, 선으로 연결될 POSE_PAIRS 
-# BODY_PARTS_BODY_25 = {0: "Nose", 1: "Neck", 2: "RShoulder", 3: "RElbow", 4: "RWrist",
-#                       5: "LShoulder", 6: "LElbow", 7: "LWrist", 8: "MidHip", 9: "RHip",
-#                       10: "RKnee", 11: "RAnkle", 12: "LHip", 13: "LKnee", 14: "LAnkle",
-#                       15: "REye", 16: "LEye", 17: "REar", 18: "LEar", 19: "LBigToe",
-#                       20: "LSmallToe", 21: "LHeel", 22: "RBigToe", 23: "RSmallToe", 24: "RHeel", 25: "Background"}
-
-# POSE_PAIRS_BODY_25 = [[0, 1], [0, 15], [0, 16], [1, 2], [1, 5], [1, 8], [8, 9], [8, 12], [9, 10], [12, 13], [2, 3],
-#                       [3, 4], [5, 6], [6, 7], [10, 11], [13, 14], [15, 17], [16, 18], [14, 21], [19, 21], [20, 21],
-#                       [11, 24], [22, 24], [23, 24]]
 
 BODY_PARTS_COCO = {0: "Nose", 1: "Neck", 2: "RShoulder", 3: "RElbow", 4: "RWrist",
                    5: "LShoulder", 6: "LElbow", 7: "LWrist", 8: "RHip", 9: "RKnee",
@@ -143,16 +129,12 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
         landmarks = np.matrix([[p.x,p.y] for p in predictor(frame, dlib_rect).parts()])
         
         # matrix 분리
-        jaw0 = (int(landmarks[JAWLINE_POINTS[0], 0]), int(landmarks[JAWLINE_POINTS[0], 1]))
-        jaw8 = (int(landmarks[JAWLINE_POINTS[8], 0]), int(landmarks[JAWLINE_POINTS[8], 1]))
-        jaw16 = (int(landmarks[JAWLINE_POINTS[16], 0]), int(landmarks[JAWLINE_POINTS[16], 1]))
-        nose3 = (int(landmarks[NOSE_POINTS[3], 0]), int(landmarks[NOSE_POINTS[3], 1]))
+        eyes0 = (int(landmarks[BOTH_EYES_POINTS[0], 0]), int(landmarks[BOTH_EYES_POINTS[0], 1]))
+        eyes8 = (int(landmarks[BOTH_EYES_POINTS[9], 0]), int(landmarks[BOTH_EYES_POINTS[9], 1]))
         
         # 양 턱 시작, 턱 끝, 코 끝
-        points.append(jaw0)
-        points.append(jaw8)
-        points.append(jaw16)
-        points.append(nose3)
+        points.append(eyes0)
+        points.append(eyes8)
 
     # 원하는 부위 출력
     landmarks_display = points[4:]
@@ -182,21 +164,21 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
         if points[2] and points[3]:
             cv.line(frame, points[2], points[3], (0, 255, 0), 3) 
         
-        cen_jaw_X = (points[4][0] + points[6][0]) // 2
-        cen_jaw_Y = (points[4][1] + points[6][1]) // 2
+        cen_eyes_X = (points[4][0] + points[5][0]) // 2
+        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
 
         cen_sholder_X = (points[2][0] + points[3][0]) // 2
         cen_sholder_Y = (points[2][1] + points[3][1]) // 2
 
-        cen_jaw = (cen_jaw_X, cen_jaw_Y)
+        cen_eyes = (cen_eyes_X, cen_eyes_Y)
         cen_sholder = (cen_sholder_X, cen_sholder_Y)
         
-        if cen_jaw and cen_sholder:
-            cv.line(frame, cen_jaw, cen_sholder, (0, 0, 255), 3) 
+        if cen_eyes and cen_sholder:
+            cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3) 
 
         # 광대 접선
-        if points[4] and points[6]:
-            cv.line(frame, points[4], points[6], (0, 255, 0), 3)
+        if points[4] and points[5]:
+            cv.line(frame, points[4], points[5], (0, 255, 0), 3)
     except (IndexError):
         pass
     except (TypeError):

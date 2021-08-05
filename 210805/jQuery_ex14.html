@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<style>
+.outer {width:200px;height:200px;background:orange; padding:50px;margin:10px}
+</style>
+<script>
+$(function(){
+	 $('.outer').mouseenter( function(){
+
+	     $('body').append('<h1> mouse enter </h1>');
+
+	 });
+     $('.outer').mouseleave( function(){
+
+	     $('body').append('<h1> mouse leave </h1>');
+
+	 });
+});
+</script></head>
+<body>
+	<div class='outer'>
+	</div>
+</body></html>

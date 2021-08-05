@@ -50,8 +50,8 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
     probMap2 = out[0, 1, :, :]
     probMap3 = out[0, 2, :, :]
     probMap4 = out[0, 5, :, :]
-    probMap5 = out[0, 16, :, :]
-    probMap6 = out[0, 17, :, :]
+    probMap5 = out[0, 14, :, :]
+    probMap6 = out[0, 15, :, :]
 
     # global 최대값 찾기
     minVal1, prob1, minLoc1, point1 = cv.minMaxLoc(probMap1)
@@ -143,24 +143,24 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
         cen_sholder = (cen_sholder_X, cen_sholder_Y)
     
-        cen_ear_X = (points[4][0] + points[5][0]) // 2
-        cen_ear_Y = (points[4][1] + points[5][1]) // 2
+        cen_eyes_X = (points[4][0] + points[5][0]) // 2
+        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
 
-        cen_ear = (cen_ear_X, cen_ear_Y)
+        cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
          # 광대 중점과 어깨 중점 연결
-        if cen_ear and cen_sholder:
-            cv.line(frame, cen_ear, cen_sholder, (0, 0, 255), 3)
+        if cen_eyes and cen_sholder:
+            cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
 
     except (TypeError):
         try:
-            cen_ear_X = (points[4][0] + points[5][0]) // 2
-            cen_ear_Y = (points[4][1] + points[5][1]) // 2
+            cen_eyes_X = (points[4][0] + points[5][0]) // 2
+            cen_eyes_Y = (points[4][1] + points[5][1]) // 2
 
-            cen_ear = (cen_ear_X, cen_ear_Y)
+            cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-            if points[1] and cen_ear:
-                cv.line(frame, points[1], cen_ear, (0, 255, 0), 3)
+            if points[1] and cen_eyes:
+                cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
         except:
             pass
     return frame

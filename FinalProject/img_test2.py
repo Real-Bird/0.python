@@ -170,8 +170,8 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/forw-samples/"
-    save_img = "./dataset/forw_posture/correct-"
+    load_img = "./dataset/corr_posture_inversion/"
+    save_img = "./dataset/corr_posture/correct-"
     for img in os.listdir(load_img):
         
         aa = load_img + img

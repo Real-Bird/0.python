@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+ 
+<script> 
+$( function() {
+
+	  $("#insertBefore").click(function(){
+		    $('#moveElement').insertBefore('#a1');
+	  });
+
+
+	  $("#insertAfter").click(function(){
+		    $('#moveElement').insertAfter('#a1');
+	  });
+} );  
+</script></head><body>
+
+<p><b id="a1">ABCD</b>efghijklmnopqrstuvwxyz </p>
+<p id="moveElement">이동할요소</p>
+
+<button id="insertBefore">insertBefore</button> 
+<button id="insertAfter">insertAfter</button>       </body></html>

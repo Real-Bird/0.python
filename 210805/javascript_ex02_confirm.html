@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script> 
+$(function(){
+
+   
+   var result = confirm ("확인 또는 취소를 선택하세요" ) ;
+   //사용자가 확인버튼 클릭시 true반환 
+   //사용자가 취소버튼 클릭시 false반환 
+   
+   alert ( result ) ;
+
+
+   if(result==true)   {  // 취소가 아닌 확인 선택했을 때
+
+		   $('#target').text(' 확인 선택 함  ') ;
+		   //id가 target인 곳에 텍스트 추가
+         //jQuery 쓰기 싫을 때
+         document.querySelector('#target').textContent = "aaa"
+   }
+   
+})
+  
+</script>
+
+</head> 
+<body>
+<h1 id = 'target'> 확인 선택하면 요기바뀜 </h1>
+</body></html>

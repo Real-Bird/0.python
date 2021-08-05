@@ -188,22 +188,25 @@ keypoint_id = 0
 threshold = 0.1
 
 for part in range(nPoints):
-    probMap = output[0,part,:,:]
-    probMap = cv2.resize(probMap, (image1.shape[1], image1.shape[0]))
-    keypoints = getKeypoints(probMap, threshold)
-    print("Keypoints - {} : {}".format(keypointsMapping[part], keypoints))
-    keypoints_with_id = []
-    for i in range(len(keypoints)):
-        keypoints_with_id.append(keypoints[i] + (keypoint_id,))
-        keypoints_list = np.vstack([keypoints_list, keypoints[i]])
-        keypoint_id += 1
+    if part == 2 or part == 5 or part == 14 or part == 15:
+        probMap = output[0,part,:,:]
+        probMap = cv2.resize(probMap, (image1.shape[1], image1.shape[0]))
+        keypoints = getKeypoints(probMap, threshold)
+        print("Keypoints - {} : {}".format(keypointsMapping[part], keypoints))
+        keypoints_with_id = []
+        for i in range(len(keypoints)):
+            keypoints_with_id.append(keypoints[i] + (keypoint_id,))
+            keypoints_list = np.vstack([keypoints_list, keypoints[i]])
+            keypoint_id += 1
 
-    detected_keypoints.append(keypoints_with_id)
+        detected_keypoints.append(keypoints_with_id)
+    else :
+        pass
 
 
 frameClone = image1.copy()
 pose_keypoints = []
-for i in range(nPoints):
+for i in range(4):
     if detected_keypoints[i] ==[]:
         pose_keypoints.append(0)
         pose_keypoints.append(0)

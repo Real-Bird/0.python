@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+$(function(){
+	 //value 설정
+	 $('input[type=text]').val('JQuery Test');
+	
+	 $("button").click(function(){
+	     aaa = $('#id').val() ;  //value 반환
+		 alert( aaa  )
+		 if (  aaa.length  == 0 ) {
+		      alert("입력을 안했습니다");
+		 }
+	 });
+});
+</script></head>
+<body>
+  <input type="text" id="id"><br>
+  <input type="password"><br>
+  <input type="radio"><br>
+  <input type="checkbox"><br>
+<button>클릭</button></body></html>

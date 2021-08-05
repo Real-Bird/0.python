@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+ 
+<script> 
+$( function() {
+
+	  $("#before").click(function(){
+		      $('#p2').before('<h1> 타이틀입니다. </h1>'  )  ;
+	  });
+
+
+	  $("#after").click(function(){
+		      $('#p2').after('<h1>  내용입니다.. </h1>'  )  ;
+	  });
+
+});
+
+
+</script></head>
+<body>
+
+<p id="p1">마바사아자차</p>
+<p id="p2">내용입니다.</p>
+<button id="before">태그 앞에 추가</button> 
+<button id="after">태그 뒤에 추가</button>
+</body></html>

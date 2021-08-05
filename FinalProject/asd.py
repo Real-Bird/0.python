@@ -11,7 +11,7 @@ def swapRGB2BGR(rgb):
 # 얼굴 인식용 클래스 생성 (기본 제공되는 얼굴 인식 모델 사용)
 detector = dlib.get_frontal_face_detector()
 # 인식된 얼굴에서 랜드마크 찾기위한 클래스 생성 
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor("D:/jb_python/self_study/210727/shape_predictor_68_face_landmarks.dat")
 
 # 이미지를 화면에 표시하기 위한 openCV 윈도 생성
 cv2.namedWindow('Face')

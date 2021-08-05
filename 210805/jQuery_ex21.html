@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+	$(function() {
+		$('#run').click(function(){
+
+			 $('div').toggleClass('colored');
+
+	    });
+	});
+</script>
+
+
+<style>
+div{   background:yellow;
+	  border:1px solid #AAA;
+	  width:80px; height:80px; margin:0 5px; float:left;
+}
+div.colored {background:green}
+
+</style>
+</head>
+<body>
+	<button id="run">toggleClass</button>
+<div class="a">1</div>  <!-- 영역 나눔 -->
+<div class="b">2</div>  <!-- 영역 나눔 -->
+<div class="a">3</div>  <!-- 영역 나눔 -->
+<span>1 </span>
+<span>2 </span>
+<span>3 </span>
+</body></html>

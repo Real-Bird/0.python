@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+
+$(function() {
+
+	$('input[type="button"]').click(function(){
+
+		  var userInput= $(':radio[name="user"]:checked').val()      ;
+		  var result =" 사용자는 " + userInput +"를 선택하였습니다." ;
+
+	      $('#result').html( result );
+
+    });
+
+});
+
+
+ 
+</script></head>
+<body><table>
+<tr>
+<td><br/>보  <input type="radio" name="user" value="paper"></td>
+<td><br/>바위<input type="radio" name="user"  value="rock"></td>
+<td><br/>가위<input type="radio" name="user" value="scissors"></td>
+</tr>
+</table><input type="button" value="게임시작">
+<div id=result></div>
+</body>
+</html>
