@@ -177,8 +177,8 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/forw-samples/"
-    save_img = "./dataset/forw_posture/forward-"
+    load_img = "./dataset/ww/"
+    save_img = "./dataset/hh/forward-"
 
     for img in os.listdir(load_img):
         
@@ -198,7 +198,7 @@ output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weight
 cv.waitKey(0) # esc 입력시 종료
 cv.destroyAllWindows()
 
-import pandas as pd
+# import pandas as pd
 
-forw_pose = pd.DataFrame(f_list, columns=["f_Y"])
-forw_pose.to_csv("forward_Y.csv", encoding="utf-8")
+# forw_pose = pd.DataFrame(f_list, columns=["f_Y"])
+# forw_pose.to_csv("forward_Y.csv", encoding="utf-8")

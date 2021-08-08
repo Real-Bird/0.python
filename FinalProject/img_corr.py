@@ -179,8 +179,8 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/corr-samples/"
-    save_img = "./dataset/corr_posture/correct-"
+    load_img = "./dataset/qq/"
+    save_img = "./dataset/gg/correct-"
 
     for img in os.listdir(load_img):
         
@@ -200,7 +200,7 @@ output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weight
 cv.waitKey(0) # esc 입력시 종료
 cv.destroyAllWindows()
 
-import pandas as pd
+# import pandas as pd
 
-corr_pose = pd.DataFrame(c_list, columns=["c_Y"])
-corr_pose.to_csv("correct_Y.csv", encoding="utf-8")
+# corr_pose = pd.DataFrame(c_list, columns=["c_Y"])
+# corr_pose.to_csv("correct_Y.csv", encoding="utf-8")
