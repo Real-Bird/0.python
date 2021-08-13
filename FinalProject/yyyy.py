@@ -1,5 +1,4 @@
-import predict
+from predict import stream_gen
 
-
-img = "unnamed.jpg"
-predict.stream_gen(img)
+img = "./FinalProject/unnamed.jpg"
+stream_gen(img)
