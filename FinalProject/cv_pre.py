@@ -23,7 +23,7 @@ def tn_detector(frame, network, model):
     # 1) image : 사용할 이미지
     # 2) scalefactor : 이미지 크기 비율 지정
     # 3) size : Convolutional Neural Network에서 사용할 이미지 크기를 지정
-    blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300), (104.0, 177.0, 123.0))
+    blob = cv2.dnn.blobFromImage(frame, 1.0, (224, 224), (104.0, 177.0, 123.0))
     
     # 얼굴 인식
     network.setInput(blob) # setInput() : blob 이미지를 네트워크의 입력으로 설정
@@ -79,14 +79,14 @@ args = vars(ap.parse_args())
 
 # 자세 인식 모델 로드
 print("[자세 인식 모델 로딩]")
-tn_detector = "FinalProject/zz/saved/"
-pbtxt = tn_detector + "tn_graph.pbtxt"
-weights = tn_detector + "tn_graph.pb"
+tn_detector = "./zz/"
+pbtxt = tn_detector + "t_vgg_model_d1024.pbtxt"
+weights = tn_detector + "t_vgg_model_d1024.pb"
 network = cv2.dnn.readNetFromTensorflow(weights, pbtxt) # cv2.dnn.readNet() : 네트워크를 메모리에 로드
 
 # pose Detector 모델 로드
 print("[pose Detector 모델 로딩]")
-tn_detector_model = tn_detector + "tn_model.h5"
+tn_detector_model = tn_detector + "t_vgg_model_d1024.h5"
 model = load_model(tn_detector_model) # load_model() : 모델 로드
 
 # input 비디오 경로가 제공되지 않은 경우 webcam

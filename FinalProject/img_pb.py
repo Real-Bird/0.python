@@ -29,7 +29,7 @@ def t_predict(frame, net):
     image_width = 224
 
     # 네트워크에 넣기 위한 전처리
-    input_blob = cv.dnn.blobFromImage(frame, 1.0/255, (image_width, image_height), (0, 0, 0), swapRB=True, crop=False)
+    input_blob = cv.dnn.blobFromImage(frame, 1.0, (image_width, image_height), (0, 0, 0), swapRB=False, crop=False)
 
     # 전처리된 blob 네트워크에 입력
     net.setInput(input_blob)
@@ -52,37 +52,16 @@ def output_video(pb,threshold):
 
     # 네트워크 불러오기
     net = cv.dnn.readNetFromTensorflow(pb)
-
-    # openCV CUDA 없을 경우 주석 처리
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    # 비디오 읽어오기
-    capture = cv.VideoCapture(0)
     
-    while True:
-        now_frame = capture.get(cv.CAP_PROP_POS_FRAMES)
-        total_frame = capture.get(cv.CAP_PROP_FRAME_COUNT)
-        
-        if now_frame == total_frame:
-            break
+    frame = cv.imread("D:/jb_python/FinalProject/dataset/forw-samples/322.jpg", cv.IMREAD_COLOR)
 
-        ret, frame = capture.read()
-        
-        frame = cv.flip(frame,1)
+    frame = t_predict(frame, net)
 
-        frame = t_predict(frame, net)
-
-        frame = imutils.resize(frame, width=640, height=480)
-
-        cv.imshow("Output_Video", frame)
-        
-        
-
-        if cv.waitKey(1) == 27:  # esc 입력시 종료
-            break
-
-    capture.release()
+    cv.imshow("Output_Video", frame)
+    cv.waitKey(0)
     cv.destroyAllWindows()
 
 output_video(pb=t_vgg_pb, threshold=0.1)

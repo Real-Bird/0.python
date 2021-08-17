@@ -32,11 +32,11 @@ print(frozen_func.outputs)
 # serialize the frozen graph and its text representation to disk.
 tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
                   logdir="./zz/",
-                  name="simple_frozen_graph.pb",
+                  name="t_vgg_model_d1024.pb",
                   as_text=False)
 
 #Optional
 tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
                   logdir="./zz/",
-                  name="simple_frozen_graph.pbtxt",
+                  name="t_vgg_model_d1024.pbtxt",
                 as_text=True)                  

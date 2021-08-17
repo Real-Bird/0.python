@@ -7,10 +7,8 @@ from tensorflow.keras.models import load_model    #학습된 모델 로드
 #이미지 전처리
 #######################################################################
 
-def stream_gen(img):
-    print(0)
-    # 이미지를 4D 텐서로 변경
-    img = image.load_img(img)
+def stream_gen(img, model_path):
+    
     print( 1 )
     img_tensor = image.img_to_array(img)
     print( 2 )
@@ -20,11 +18,13 @@ def stream_gen(img):
     # print(img_tensor.shape)  # 이미지 텐서의 크기는 (1, 150, 150, 3)입니다
     print(4)
 #######################################################################
-    model = load_model("./FinalProject/tn_model.h5")
+    model = load_model(model_path)
     print(5)
     result = model.predict( img_tensor ) 
     print(6)
     if result > 0.5 :
-        print("거북목")
+        print("forward")
     else :
-        print("정자세")
+        print("correct")
+
+    return result
