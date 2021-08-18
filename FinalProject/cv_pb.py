@@ -5,24 +5,13 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input # mobile
 from tensorflow.keras.preprocessing.image import img_to_array # 이미지를 numpy 배열로 변환
 from tensorflow.keras.models import load_model # 모델 로드
 
-
-# 신체 path
-t_vgg_pbtxt = "D:\\jb_python\\FinalProject\\zz\\t_vgg_model_d1024.pbtxt"
 t_vgg_pb = "D:\\jb_python\\FinalProject\\zz\\t_vgg_model_d1024.pb"
 
 # t_vgg_model = load_model("D:\\jb_python\\FinalProject\\tn_model\\t_vgg_model_d1024.h5")
 
 def t_predict(frame, net):
-    # frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB) # RGB 변환
-
     # 프레임 resize
     frame = imutils.resize(frame, width=224, height=224)
-
-    # frame = img_to_array(frame) # 이미지(얼굴)를 numpy 배열로 변환
-
-    # frame = preprocess_input(frame) # 모델에 필요한 형식에 이미지(얼굴)를 적절하게 맞추기위한 함수(전처리)
-
-    # print(frame.shape)
 
     # 입력 이미지의 사이즈 정의
     image_height = 224
@@ -37,14 +26,19 @@ def t_predict(frame, net):
     # 결과 받아오기
     out = net.forward() # shape : (1, 1)
 
-    percentage = out[0, 0].astype("float32") * 100
+    percentage = float(out[0, 0]) * 100
     # bounding box 레이블 설정
-    label = "co : " if out[0, 0] < 0.5 else "fo : "
+    label = "co: " if out[0, 0] < 0.5 else "fo: "
     
+    cv.rectangle(frame, (0, 0), (120, 40), (255, 255, 255), -1)
     # bounding box 출력
-    cv.putText(frame, label, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 1, lineType=cv.LINE_AA)
-    cv.putText(frame, str(percentage), (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 1, lineType=cv.LINE_AA)
-    cv.rectangle(frame, (0, 0), (200, 60), (255, 0, 0), 2)
+    if out[0, 0]  < 0.5:  
+        cv.putText(frame, label, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{:0.1f}".format(percentage), (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1, lineType=cv.LINE_AA)
+    else:
+        cv.putText(frame, label, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        cv.putText(frame, "{:0.1f}".format(percentage), (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, lineType=cv.LINE_AA)
+    
 
     return frame
 

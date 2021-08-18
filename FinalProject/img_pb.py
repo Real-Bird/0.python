@@ -37,13 +37,14 @@ def t_predict(frame, net):
     # 결과 받아오기
     out = net.forward() # shape : (1, 1)
 
-    percentage = out[0, 0].astype("float32") * 100
+    percentage = float(out[0, 0]) * 100
+    
     # bounding box 레이블 설정
     label = "co : " if out[0, 0] < 0.5 else "fo : "
     
     # bounding box 출력
     cv.putText(frame, label, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 1, lineType=cv.LINE_AA)
-    cv.putText(frame, str(percentage), (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 1, lineType=cv.LINE_AA)
+    cv.putText(frame, "{:0.1f}".format(percentage), (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 1, lineType=cv.LINE_AA)
     cv.rectangle(frame, (0, 0), (200, 60), (255, 0, 0), 2)
 
     return frame
@@ -56,7 +57,7 @@ def output_video(pb,threshold):
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
     
-    frame = cv.imread("D:/jb_python/FinalProject/dataset/forw-samples/322.jpg", cv.IMREAD_COLOR)
+    frame = cv.imread("D:/jb_python/FinalProject/dataset/forw-samples/269.jpg", cv.IMREAD_COLOR)
 
     frame = t_predict(frame, net)
 
