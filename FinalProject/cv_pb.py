@@ -1,11 +1,34 @@
 import numpy as np
 import cv2 as cv
 import imutils
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input # mobilenet_v2 모델에 필요한 형식에 이미지를 적절하게 맞추기위한 함수(전처리)
-from tensorflow.keras.preprocessing.image import img_to_array # 이미지를 numpy 배열로 변환
-from tensorflow.keras.models import load_model # 모델 로드
 
-t_vgg_pb = "D:\\jb_python\\FinalProject\\zz\\t_vgg_model_d1024.pb"
+t_vgg_pb = "D:/jb_python/FinalProject/zz/t_vgg_model_v1.pb"
+face_cascade = cv.CascadeClassifier('D:/Program Files/opencv_source/opencv-4.5.3/data/haarcascades_cuda/haarcascade_frontalface_default.xml')
+
+def face_detect(frame, cascade, net):
+
+    frame = imutils.resize(frame, width=224, height=224)
+
+    faces_cnt = 0
+    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 5)
+
+    if faces_cnt != len(faces) :
+            faces_cnt = len(faces)
+            if faces_cnt != 0 :
+                print("현재 검출된 얼굴 수 : ", str(faces_cnt))
+                frame = t_predict(frame, net)
+    else:
+        cv.putText(frame, "not found face.", (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, lineType=cv.LINE_AA)
+
+    # 검출된 안면에 사각형 그리기
+    # cv2.rectangle(영상이미지, (x1, y1), (x2, y2), (B, G, R), 두깨, 선형타입)
+    # (X1, Y1) 좌측 상단 모서리, (X2, Y2) 우측 하단 모서리.
+    if len(faces) :
+        for  x, y, w, h in faces :
+            cv.rectangle(frame, (x, y), (x + w, y + h), (255,255,255), 2, cv.LINE_4)
+
+    return frame
 
 def t_predict(frame, net):
     # 프레임 resize
@@ -63,7 +86,7 @@ def output_video(pb,threshold):
         
         frame = cv.flip(frame,1)
 
-        frame = t_predict(frame, net)
+        frame = face_detect(frame, face_cascade, net)
 
         frame = imutils.resize(frame, width=640, height=480)
 
