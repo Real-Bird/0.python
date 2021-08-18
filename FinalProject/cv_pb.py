@@ -7,8 +7,6 @@ from tensorflow.keras.models import load_model # 모델 로드
 
 t_vgg_pb = "D:\\jb_python\\FinalProject\\zz\\t_vgg_model_d1024.pb"
 
-# t_vgg_model = load_model("D:\\jb_python\\FinalProject\\tn_model\\t_vgg_model_d1024.h5")
-
 def t_predict(frame, net):
     # 프레임 resize
     frame = imutils.resize(frame, width=224, height=224)
