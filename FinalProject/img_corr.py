@@ -179,8 +179,8 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/qq/"
-    save_img = "./dataset/gg/correct-"
+    load_img = "./dataset/new_train_samples/col_vali/co/"
+    save_img = "./dataset/new_train_samples/pose_vali/co/correct-"
 
     for img in os.listdir(load_img):
         
