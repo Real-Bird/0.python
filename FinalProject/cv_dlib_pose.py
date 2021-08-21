@@ -25,13 +25,20 @@ BODY_PARTS_COCO = {0: "Nose", 1: "Neck", 2: "RShoulder", 3: "RElbow", 4: "RWrist
 POSE_PAIRS_COCO = [[0, 1], [0, 14], [0, 15], [1, 2], [1, 5], [1, 8], [1, 11], [2, 3], [3, 4],
                    [5, 6], [6, 7], [8, 9], [9, 10], [12, 13], [11, 12], [14, 16], [15, 17]]
 
+# 네트워크 불러오기
+net = cv.dnn.readNetFromCaffe(protoFile_coco, weightsFile_coco)
+
+# openCV CUDA 없을 경우 주석 처리
+net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
+net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
+
  
-def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
+def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame, faces):
     global points
     # 얼굴 찾음
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    
 
-    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv.CASCADE_SCALE_IMAGE)
+    
     # 입력 이미지의 사이즈 정의
     image_height = 640
     image_width = 480
@@ -146,7 +153,7 @@ def output_keypoints(frame, net, threshold, BODY_PARTS, now_frame, total_frame):
 
     return frame
 
-def output_keypoints_with_lines(frame, POSE_PAIRS):
+def output_keypoints_with_lines(frame, POSE_PAIRS, faces):
     print(points)
     #코와 목 접선
     # if points[0] and points[1]:
@@ -185,37 +192,30 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
         pass
     return frame
 
-def output_keypoints_with_lines_video(proto_file, weights_file, threshold, BODY_PARTS, POSE_PAIRS):
+# 비디오 읽어오기
+capture = cv.VideoCapture(0, cv.CAP_MSMF)
 
-    # 네트워크 불러오기
-    net = cv.dnn.readNetFromCaffe(proto_file, weights_file)
-
-    # openCV CUDA 없을 경우 주석 처리
-    net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
-    net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
-
-    # 비디오 읽어오기
-    capture = cv.VideoCapture(0, cv.CAP_MSMF)
+while True:
+    now_frame_boy = capture.get(cv.CAP_PROP_POS_FRAMES)
+    total_frame_boy = capture.get(cv.CAP_PROP_FRAME_COUNT)
     
-    while True:
-        now_frame_boy = capture.get(cv.CAP_PROP_POS_FRAMES)
-        total_frame_boy = capture.get(cv.CAP_PROP_FRAME_COUNT)
-        
-        if now_frame_boy == total_frame_boy:
-            break
+    if now_frame_boy == total_frame_boy:
+        break
 
-        ret, frame_boy = capture.read()
-        
-        frame_boy = cv.flip(frame_boy,1)
-        frame_boy = output_keypoints(frame=frame_boy, net=net, threshold=threshold, BODY_PARTS=BODY_PARTS, now_frame=now_frame_boy, total_frame=total_frame_boy)
-        frame_boy = output_keypoints_with_lines(frame=frame_boy, POSE_PAIRS=POSE_PAIRS)
-        cv.imshow("Output_Keypoints", frame_boy)
+    ret, frame_boy = capture.read()
+    
+    frame_boy = cv.flip(frame_boy,1)
+    gray = cv.cvtColor(frame_boy, cv.COLOR_BGR2GRAY)
+    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv.CASCADE_SCALE_IMAGE)
+    frame_boy = output_keypoints(frame=frame_boy, net=net, threshold=0.1, BODY_PARTS=BODY_PARTS_COCO, now_frame=now_frame_boy, total_frame=total_frame_boy, faces=faces)
+    frame_boy = output_keypoints_with_lines(frame=frame_boy, POSE_PAIRS=POSE_PAIRS_COCO, faces=faces)
+    cv.imshow("Output_Keypoints", frame_boy)
 
-        if cv.waitKey(1) == 27:  # esc 입력시 종료
-            break
+    if cv.waitKey(1) == 27:  # esc 입력시 종료
+        break
 
-    capture.release()
-    cv.destroyAllWindows()
+capture.release()
+cv.destroyAllWindows()
 
 # 키포인트를 저장할 빈 리스트
 points = []
@@ -223,5 +223,3 @@ points = []
 # output_keypoints_with_lines_video(proto_file=protoFile_body_25, weights_file=weightsFile_body_25,
 #                                   threshold=0.1, BODY_PARTS=BODY_PARTS_BODY_25, POSE_PAIRS=POSE_PAIRS_BODY_25)
 
-output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weightsFile_coco,
-                                 threshold=0.1, BODY_PARTS=BODY_PARTS_COCO, POSE_PAIRS=POSE_PAIRS_COCO)

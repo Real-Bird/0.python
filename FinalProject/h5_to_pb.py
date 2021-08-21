@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
 import numpy as np
 
-model = keras.models.load_model('./tn_model/t_vgg_model_d1024.h5')
+model = keras.models.load_model('./tn_model/yw_tm_model.h5')
 
 
 # Convert Keras model to ConcreteFunction
@@ -32,11 +32,11 @@ print(frozen_func.outputs)
 # serialize the frozen graph and its text representation to disk.
 tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
                   logdir="./zz/",
-                  name="t_vgg_model_d1024.pb",
+                  name="yw_tm_model.pb",
                   as_text=False)
 
 #Optional
-tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
-                  logdir="./zz/",
-                  name="t_vgg_model_d1024.pbtxt",
-                as_text=True)                  
+# tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
+#                   logdir="./zz/",
+#                   name="t_vgg_model_d1024.pbtxt",
+#                 as_text=True)                  

@@ -1,8 +1,8 @@
 import cv2 as cv
 import os
 
-load_img = "./dataset/corr-samples/"
-save_img = "./dataset/corr_posture_flip/correct_flip_"
+load_img = "./dataset/tm_total/"
+save_img = "./dataset/tm_total/flip_"
 for img in os.listdir(load_img):
     
     aa = load_img + img

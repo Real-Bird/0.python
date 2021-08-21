@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <video id="videoInput" style="display:none"></video>
+    <canvas id="videoOutput"></canvas>
+    <button onclick=stream()>Send</button>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script>
+     var w = 320, h = 240;
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  var constraints = {audio: false, video: true};
+  var video = document.getElementById("videoInput");
+  video.width = w;
+  video.height = h;
+  function successCallback(stream){
+  	video.srcObject = stream;
+  	video.play();
+  }
+  function errorCallback(error){
+   	console.log(error);
+  }
+  navigator.getUserMedia(constraints, successCallback, errorCallback);
+	var canvas = document.getElementById("videoOutput");
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext("2d");
+  function processImage(){
+        ctx.drawImage(video, 0, 0, w, h);
+        setTimeout(processImage, 1);
+  }
+  processImage();
+
+  function stream(){
+    setInterval(sendImage, 30);
+  }
+  async function predict(){
+    const model = await tf.loadLayersModel('./tn_model/out_put/model.json');
+    console.log(model)
+    video.width = 224;
+    video.height = 224;
+    model.predict(video)
+  }
+  predict()
+        
+</script>
+    
+</html>
