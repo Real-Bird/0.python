@@ -48,7 +48,7 @@ def output_keypoints(frame, net, BODY_PARTS):
     points = []
 
     # 해당 신체부위 신뢰도 얻음.
-    # probMap1 = out[0, 0, :, :]
+    probMap1 = out[0, 0, :, :]
     probMap2 = out[0, 1, :, :]
     probMap3 = out[0, 2, :, :]
     probMap4 = out[0, 5, :, :]
@@ -56,7 +56,7 @@ def output_keypoints(frame, net, BODY_PARTS):
     probMap6 = out[0, 15, :, :]
 
     # global 최대값 찾기
-    # minVal1, prob1, minLoc1, point1 = cv.minMaxLoc(probMap1)
+    minVal1, prob1, minLoc1, point1 = cv.minMaxLoc(probMap1)
     minVal2, prob2, minLoc2, point2 = cv.minMaxLoc(probMap2)
     minVal3, prob3, minLoc3, point3 = cv.minMaxLoc(probMap3)
     minVal4, prob4, minLoc4, point4 = cv.minMaxLoc(probMap4)
@@ -64,8 +64,8 @@ def output_keypoints(frame, net, BODY_PARTS):
     minVal6, prob6, minLoc6, point6 = cv.minMaxLoc(probMap6)
     
     # 원래 이미지에 맞게 점 위치 변경
-    # x1 = (frame_width * point1[0]) / out_width
-    # y1 = (frame_height * point1[1]) / out_height
+    x1 = (frame_width * point1[0]) / out_width
+    y1 = (frame_height * point1[1]) / out_height
     x2 = (frame_width * point2[0]) / out_width
     y2 = (frame_height * point2[1]) / out_height
     x3 = (frame_width * point3[0]) / out_width
@@ -77,45 +77,97 @@ def output_keypoints(frame, net, BODY_PARTS):
     x6 = (frame_width * point6[0]) / out_width
     y6 = (frame_height * point6[1]) / out_height
 
-    # 키포인트 검출한 결과가 0.1보다 크면(검출한곳이 위 BODY_PARTS랑 맞는 부위면) points에 추가, 검출했는데 부위가 없으면 None으로   
+     # 키포인트 검출한 결과가 0.1보다 크면(검출한곳이 위 BODY_PARTS랑 맞는 부위면) points에 추가, 검출했는데 부위가 없으면 None으로   
+    # 코 
+    if prob1 > 0.1 :    
+        cv.circle(frame, (int(x1), int(y1)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(1), (int(x1), int(y1)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
+        points.append((int(x1), int(y1)))
 
-    # 코
-    # if prob1 > 0.1 :
-    #     points.append((int(x1), int(y1)))
-    # else:  # [not pointed]
-    #     points.append(None)
+    else:  # [not pointed]
+        points.append(None)
+        #print(f"[not pointed] {BODY_PARTS[i]} ({i}) => prob: {prob:.5f} / x: {x} / y: {y}")
+
     # 목
     if prob2 > 0.1 :
+        cv.circle(frame, (int(x2), int(y2)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(2), (int(x2), int(y2)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x2), int(y2)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 어깨
     if prob3 > 0.1 :    
+        cv.circle(frame, (int(x3), int(y3)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(3), (int(x3), int(y3)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x3), int(y3)))
     else:  # [not pointed]
         points.append(None)
     
     # 왼쪽 어깨
     if prob4 > 0.1 :    
+        cv.circle(frame, (int(x4), int(y4)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(4), (int(x4), int(y4)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x4), int(y4)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 귀
     if prob5 > 0.1 :    
+        cv.circle(frame, (int(x5), int(y5)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(5), (int(x5), int(y5)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x5), int(y5)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 귀
     if prob6 > 0.1 :    
+        cv.circle(frame, (int(x6), int(y6)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
+        cv.putText(frame, "{}".format(6), (int(x6), int(y6)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x6), int(y6)))
     else:  # [not pointed]
         points.append(None)
 
     return frame
+
+def output_keypoints_with_lines(frame, POSE_PAIRS):
+    global y_list
+
+    if points[2] and points[3]:
+        cv.line(frame, points[2], points[3], (0, 255, 0), 3)
+
+    if points[4] and points[5]:
+        cv.line(frame, points[4], points[5], (0, 255, 0), 3)  
+    try:
+        # 어깨 중점
+        cen_sholder_X = (points[2][0] + points[3][0]) // 2
+        cen_sholder_Y = (points[2][1] + points[3][1]) // 2
+
+        cen_sholder = (cen_sholder_X, cen_sholder_Y)
     
+        cen_eyes_X = (points[4][0] + points[5][0]) // 2
+        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
+
+        cen_eyes = (cen_eyes_X, cen_eyes_Y)
+
+         # 광대 중점과 어깨 중점 연결
+        if cen_eyes and cen_sholder:
+            cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
+            y_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+            print(abs(cen_eyes_Y - cen_sholder_Y)/(points[2][0] + points[3][0]))
+
+    except (TypeError):
+        cen_eyes_X = (points[4][0] + points[5][0]) // 2
+        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
+
+        cen_eyes = (cen_eyes_X, cen_eyes_Y)
+
+        if points[1] and cen_eyes:
+            cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
+            y_list.append(abs(cen_eyes_Y - points[1][1]))
+            print(abs(cen_eyes_Y - points[1][1])/(points[2][0] + points[3][0]))
+
+    return frame
 
 def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE_PAIRS):
     
@@ -125,79 +177,23 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/tm_total/"
-    save_corr = "./dataset/auto_corr/correct"
-    save_forw = "./dataset/auto_forw/forward"
-    save_other = "./dataset/auto_other/other"
-    print("이미지 로드 시작")
-    for img in os.listdir(load_img):
+    
+    load_img = "./dataset/auto_corr/correct499.jpg"
         
-        
-        aa = load_img + img
-        cap = cv.imread(aa, cv.IMREAD_COLOR)
+    cap = cv.imread(load_img, cv.IMREAD_COLOR)
 
-        cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
-        print(img + "분류 중")
-        try:
-            # 어깨 중점
-            cen_sholder_X = (points[1][0] + points[2][0]) // 2
-            cen_sholder_Y = (points[1][1] + points[2][1]) // 2
+    cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
+    cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
+    cv.imshow("sample", cap)
 
-            cen_sholder = (cen_sholder_X, cen_sholder_Y)
-        
-            cen_eyes_X = (points[3][0] + points[4][0]) // 2
-            cen_eyes_Y = (points[3][1] + points[4][1]) // 2
-
-            cen_eyes = (cen_eyes_X, cen_eyes_Y)
-
-            # 광대 중점과 어깨 중점 연결
-            if cen_eyes and cen_sholder:
-                eyes_shol = abs(cen_eyes_Y - cen_sholder_Y)
-                eyes = abs(points[3][0] - points[4][0])
-                c_list.append(eyes_shol)
-                if eyes_shol / eyes > 3.1:
-                    cv.imwrite(save_corr+img, cap)
-                    print(img + "co 분류 완료")
-                elif eyes_shol / eyes <= 3.1:
-                    cv.imwrite(save_forw+img, cap)
-                    print(img + "fo 분류 완료")
-            else:
-                cv.imwrite(save_other+img, cap)
-                print(img + "ot 분류 완료")
-                
-        except:
-            try:
-                cen_eyes_X = (points[3][0] + points[4][0]) // 2
-                cen_eyes_Y = (points[3][1] + points[4][1]) // 2
-
-                cen_eyes = (cen_eyes_X, cen_eyes_Y)
-
-                if points[1] and cen_eyes:
-                    eyes_neck = abs(cen_eyes_Y - points[0][1])
-                    eyes = abs(points[3][0] - points[4][0])
-                    c_list.append(eyes_neck)
-                    if eyes_neck / eyes > 3.1:
-                        cv.imwrite(save_corr+img, cap)
-                        print(img + "co 분류 완료")
-                    elif eyes_neck / eyes <= 3.1:
-                        cv.imwrite(save_forw+img, cap)
-                        print(img + "fo 분류 완료")
-                else:
-                    cv.imwrite(save_other+img, cap)
-                    print(img + "ot 분류 완료")
-            except:
-                pass
-    print("전체 분류 완료") 
 # 키포인트를 저장할 빈 리스트
 points = []
-c_list = []
+t_list = []
+y_list = []
+
+
 
 output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weightsFile_coco, BODY_PARTS=BODY_PARTS_COCO, POSE_PAIRS=POSE_PAIRS_COCO)
 
 cv.waitKey(0) # esc 입력시 종료
 cv.destroyAllWindows()
-
-# import pandas as pd
-
-# corr_pose = pd.DataFrame(c_list, columns=["c_Y"])
-# corr_pose.to_csv("correct_Y.csv", encoding="utf-8")

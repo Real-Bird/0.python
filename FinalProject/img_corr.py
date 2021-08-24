@@ -131,13 +131,13 @@ def output_keypoints(frame, net, BODY_PARTS):
     return frame
 
 def output_keypoints_with_lines(frame, POSE_PAIRS):
-    global c_list
+    global cx_list,cy_list
 
-    if points[2] and points[3]:
-        cv.line(frame, points[2], points[3], (0, 255, 0), 3)
+    # if points[2] and points[3]:
+    #     cv.line(frame, points[2], points[3], (0, 255, 0), 3)
 
-    if points[4] and points[5]:
-        cv.line(frame, points[4], points[5], (0, 255, 0), 3)  
+    # if points[4] and points[5]:
+    #     cv.line(frame, points[4], points[5], (0, 255, 0), 3)  
     try:
         # 어깨 중점
         cen_sholder_X = (points[2][0] + points[3][0]) // 2
@@ -152,8 +152,9 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
          # 광대 중점과 어깨 중점 연결
         if cen_eyes and cen_sholder:
-            cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
-            c_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+            # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
+            cy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+            cx_list.append(abs(points[4][0] + points[5][0]))
             
 
     except (TypeError):
@@ -164,8 +165,9 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
             cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
             if points[1] and cen_eyes:
-                cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
-                c_list.append(abs(cen_eyes_Y - points[1][1]))
+                # cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
+                cy_list.append(abs(cen_eyes_Y - points[1][1]))
+                cx_list.append(abs(points[4][0] + points[5][0]))
         except:
             pass
     
@@ -179,9 +181,10 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
-    load_img = "./dataset/new_train_samples/col_vali/co/"
-    save_img = "./dataset/new_train_samples/pose_vali/co/correct-"
-
+    load_img = "./dataset/copy_corr/"
+    # save_img = "./dataset/new_train_samples/pose_vali/co/correct-"
+    print("이미지 로드 중")
+    count = 1
     for img in os.listdir(load_img):
         
         aa = load_img + img
@@ -189,18 +192,22 @@ def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE
 
         cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
         cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
-        cv.imwrite(save_img+img, cap)
-
+        # cv.imwrite(save_img+img, cap)
+        print("{}번째 이미지 로드 완료".format(count))
+        count += 1
 # 키포인트를 저장할 빈 리스트
 points = []
-c_list = []
+cy_list = []
+cx_list = []
 
 output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weightsFile_coco, BODY_PARTS=BODY_PARTS_COCO, POSE_PAIRS=POSE_PAIRS_COCO)
 
 cv.waitKey(0) # esc 입력시 종료
 cv.destroyAllWindows()
 
-# import pandas as pd
+import pandas as pd
 
-# corr_pose = pd.DataFrame(c_list, columns=["c_Y"])
-# corr_pose.to_csv("correct_Y.csv", encoding="utf-8")
+corr_X = pd.DataFrame(cx_list, columns=["c_X"])
+corr_X.to_csv("correct_X.csv", encoding="utf-8")
+corr_Y = pd.DataFrame(cy_list, columns=["c_Y"])
+corr_Y.to_csv("correct_Y.csv", encoding="utf-8")

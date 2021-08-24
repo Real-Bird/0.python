@@ -16,7 +16,10 @@
 *.zip
 *.data-00000-of-00001
 *.index
-*.pb
+self_mode.pb
+teachable_model.pb
+keras_metadata.pb
+saved_model.pb
 *.pbtxt
 checkpoint
 *.xml
