@@ -150,12 +150,13 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
         cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-         # 광대 중점과 어깨 중점 연결
-        if cen_eyes and cen_sholder:
-            # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
-            cy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
-            cx_list.append(abs(points[4][0] + points[5][0]))
-            
+        #  # 광대 중점과 어깨 중점 연결
+        # if cen_eyes and cen_sholder:
+        #     # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
+        #     cy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+        #     cx_list.append(abs(points[4][0] + points[5][0]))
+        if points[0] and points[1]:
+            cy_list.append(abs(points[0][1]-points[1][1]))
 
     except (TypeError):
         try:
@@ -164,10 +165,10 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
             cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-            if points[1] and cen_eyes:
-                # cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
-                cy_list.append(abs(cen_eyes_Y - points[1][1]))
-                cx_list.append(abs(points[4][0] + points[5][0]))
+            # if points[1] and cen_eyes:
+            #     # cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
+            #     cy_list.append(abs(cen_eyes_Y - points[1][1]))
+            #     cx_list.append(abs(points[4][0] + points[5][0]))
         except:
             pass
     
@@ -207,7 +208,8 @@ cv.destroyAllWindows()
 
 import pandas as pd
 
-corr_X = pd.DataFrame(cx_list, columns=["c_X"])
-corr_X.to_csv("correct_X.csv", encoding="utf-8")
+# corr_X = pd.DataFrame(cx_list, columns=["c_X"])
+# corr_X.to_csv("correct_X.csv", encoding="utf-8")
 corr_Y = pd.DataFrame(cy_list, columns=["c_Y"])
 corr_Y.to_csv("correct_Y.csv", encoding="utf-8")
+print("Done")

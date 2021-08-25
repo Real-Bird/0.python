@@ -150,24 +150,28 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
         cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-         # 광대 중점과 어깨 중점 연결
-        if cen_eyes and cen_sholder:
-            # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
-            fy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
-            fx_list.append(abs(points[4][0] + points[5][0]))
+        #  # 광대 중점과 어깨 중점 연결
+        # if cen_eyes and cen_sholder:
+        #     # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
+        #     fy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+        #     fx_list.append(abs(points[4][0] + points[5][0]))
+        if points[0] and points[1]:
+            fy_list.append(abs(points[0][1]-points[1][1]))
             
 
     except (TypeError):
-        cen_eyes_X = (points[4][0] + points[5][0]) // 2
-        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
+        try:
+            cen_eyes_X = (points[4][0] + points[5][0]) // 2
+            cen_eyes_Y = (points[4][1] + points[5][1]) // 2
 
-        cen_eyes = (cen_eyes_X, cen_eyes_Y)
+            cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-        if points[1] and cen_eyes:
-            # cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
-            fy_list.append(abs(cen_eyes_Y - points[1][1]))
-            fx_list.append(abs(points[4][0] + points[5][0]))
-
+            # if points[1] and cen_eyes:
+            #     # cv.line(frame, points[1], cen_eyes, (0, 255, 0), 3)
+            #     fy_list.append(abs(cen_eyes_Y - points[1][1]))
+            #     fx_list.append(abs(points[4][0] + points[5][0]))
+        except:
+            pass
     
     return frame
 
@@ -206,8 +210,9 @@ cv.destroyAllWindows()
 
 import pandas as pd
 
-forw_X = pd.DataFrame(fx_list, columns=["f_X"])
-forw_X.to_csv("forward_X.csv", encoding="utf-8")
+# forw_X = pd.DataFrame(fx_list, columns=["f_X"])
+# forw_X.to_csv("forward_X.csv", encoding="utf-8")
 
 forw_Y = pd.DataFrame(fy_list, columns=["f_Y"])
 forw_Y.to_csv("forward_Y.csv", encoding="utf-8")
+print("Done")
