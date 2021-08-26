@@ -1,9 +1,21 @@
 import numpy as np
 import cv2 as cv
 import os
+import dlib
+
+# 얼굴 path
+faceCascade = cv.CascadeClassifier("D:/python/OCV/cascades/haarcascade_frontalface_alt.xml")
+predictor = dlib.shape_predictor("D:/jb_python/self_study/210727/shape_predictor_68_face_landmarks.dat")
 
 protoFile_coco = "D:/Program Files/openpose-master/models/pose/coco/pose_deploy_linevec.prototxt"
 weightsFile_coco = "D:/Program Files/openpose-master/models/pose/coco/pose_iter_440000.caffemodel"
+
+JAWLINE_POINTS = list(range(0, 17))
+BOTH_EYEBROW_POINTS = list(range(17,27))
+NOSE_POINTS = list(range(27, 36))
+BOTH_EYES_POINTS = list(range(36,48))
+MOUTH_OUTLINE_POINTS = list(range(48, 61))
+MOUTH_INNER_POINTS = list(range(61, 68))
 
 BODY_PARTS_COCO = {0: "Nose", 1: "Neck", 2: "RShoulder", 3: "RElbow", 4: "RWrist",
                    5: "LShoulder", 6: "LElbow", 7: "LWrist", 8: "RHip", 9: "RKnee",
@@ -16,7 +28,9 @@ POSE_PAIRS_COCO = [[0, 1], [0, 14], [0, 15], [1, 2], [1, 5], [1, 8], [1, 11], [2
  
 def output_keypoints(frame, net, BODY_PARTS):
     global points
-    
+    # 얼굴 찾음
+    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv2.CASCADE_SCALE_IMAGE)
+
     # 입력 이미지의 사이즈 정의
     image_height = 368
     image_width = 368
@@ -80,8 +94,6 @@ def output_keypoints(frame, net, BODY_PARTS):
      # 키포인트 검출한 결과가 0.1보다 크면(검출한곳이 위 BODY_PARTS랑 맞는 부위면) points에 추가, 검출했는데 부위가 없으면 None으로   
     # 코 
     if prob1 > 0.1 :    
-        # cv.circle(frame, (int(x1), int(y1)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(1), (int(x1), int(y1)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x1), int(y1)))
 
     else:  # [not pointed]
@@ -90,54 +102,53 @@ def output_keypoints(frame, net, BODY_PARTS):
 
     # 목
     if prob2 > 0.1 :
-        # cv.circle(frame, (int(x2), int(y2)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(2), (int(x2), int(y2)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x2), int(y2)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 어깨
     if prob3 > 0.1 :    
-        # cv.circle(frame, (int(x3), int(y3)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(3), (int(x3), int(y3)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x3), int(y3)))
     else:  # [not pointed]
         points.append(None)
     
     # 왼쪽 어깨
     if prob4 > 0.1 :    
-        # cv.circle(frame, (int(x4), int(y4)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(4), (int(x4), int(y4)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x4), int(y4)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 귀
     if prob5 > 0.1 :    
-        # cv.circle(frame, (int(x5), int(y5)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(5), (int(x5), int(y5)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x5), int(y5)))
     else:  # [not pointed]
         points.append(None)
 
     # 오른쪽 귀
     if prob6 > 0.1 :    
-        # cv.circle(frame, (int(x6), int(y6)), 3, (0, 255, 255), thickness=-1, lineType=cv.FILLED)       # circle(그릴곳, 원의 중심, 반지름, 색)
-        # cv.putText(frame, "{}".format(6), (int(x6), int(y6)), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, lineType=cv.LINE_AA)
         points.append((int(x6), int(y6)))
     else:  # [not pointed]
         points.append(None)
 
+    for (x,y,w,h) in faces:
+        # opencv 이미지 > dlib용 사각형 변환
+        dlib_rect = dlib.rectangle(int(x), int(y), int(x+w), int(y+h))
+        # 랜드마크 포인트 지정
+        landmarks = np.matrix([[p.x,p.y] for p in predictor(frame, dlib_rect).parts()])
+        # 원하는 포인트 넣음 (현재 전부)
+        landmarks_display = landmarks[0:68]
+        
+        #양 턱 시작, 턱 끝, 코 끝
+        points.append(landmarks[JAWLINE_POINTS[0]])
+        points.append(landmarks[JAWLINE_POINTS[8]])
+        points.append(landmarks[JAWLINE_POINTS[16]])
+        points.append(landmarks[NOSE_POINTS[3]])
+
     return frame
 
 def output_keypoints_with_lines(frame, POSE_PAIRS):
-    global fx_list, fy_cen_list, fy_res_list, fy_les_list, fy_nn_list
-
-    # if points[2] and points[3]:
-    #     cv.line(frame, points[2], points[3], (0, 255, 0), 3)
-
-    # if points[4] and points[5]:
-    #     cv.line(frame, points[4], points[5], (0, 255, 0), 3)  
+    global y_list
+ 
     try:
         # 어깨 중점
         cen_sholder_X = (points[2][0] + points[3][0]) // 2
@@ -150,84 +161,64 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
 
         cen_eyes = (cen_eyes_X, cen_eyes_Y)
 
-        #  # 광대 중점과 어깨 중점 연결
-        # if cen_eyes and cen_sholder:
-        #     # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
-        #     fy_list.append(abs(cen_eyes_Y - cen_sholder_Y))
-        #     fx_list.append(abs(points[4][0] + points[5][0]))
-        # if points[0] and points[1]:
-        #     fy_list.append(abs(points[0][1]-points[1][1]))
-        # 광대 중점과 어깨 중점 연결
-        if cen_eyes and cen_sholder and points[0]:
-            # cv.line(frame, cen_eyes, cen_sholder, (0, 0, 255), 3)
-            fy_cen_list.append(abs(cen_eyes_Y - cen_sholder_Y))
-            #눈 간격
-            fx_list.append(abs(points[4][0] + points[5][0]))
-            # 왼쪽 눈과 어깨 연결선
-            fy_les_list.append(abs(points[4][1]-points[2][1]))
-            # 오른쪽 눈과 어깨 연결선
-            fy_res_list.append(abs(points[5][1]-points[3][1]))
-            # 코와 목 연결선    
-            fy_nn_list.append(abs(points[0][1]-points[1][1]))
+         # 광대 중점과 어깨 중점 연결
+        if cen_eyes and cen_sholder:
+            y_list.append(abs(cen_eyes_Y - cen_sholder_Y))
+        
+        if points[7] and cen_sholder:
+            y_list.append(abs(points[7][1]-cen_sholder_Y))
             
 
-    except:
-        pass
+    except (TypeError):
+        cen_eyes_X = (points[4][0] + points[5][0]) // 2
+        cen_eyes_Y = (points[4][1] + points[5][1]) // 2
+
+        cen_eyes = (cen_eyes_X, cen_eyes_Y)
+
+        if points[1] and cen_eyes:
+            y_list.append(abs(cen_eyes_Y - points[1][1]))
+            
+        if points[7] and cen_sholder:
+            y_list.append(abs(points[7][1]-cen_sholder_Y))
+
     
     return frame
-
-def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE_PAIRS):
+# 네트워크 불러오기
+net = cv.dnn.readNetFromCaffe(proto_file, weights_file)
+net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
+net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
+def output_keypoints_with_lines_video(proto_file, weights_file, BODY_PARTS, POSE_PAIRS, net):
     
 
-    # 네트워크 불러오기
-    net = cv.dnn.readNetFromCaffe(proto_file, weights_file)
-    net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
-    net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
+    
 
-    load_img = "./dataset/train1/fo/"
-    # save_img = "./dataset/new_train_samples/pose_train/fo/forward-"
-    print("이미지 로드 시작")
-    count = 1
-    for img in os.listdir(load_img):
+    
+    load_img2 = "./dataset/forw-samples/"
+    save_img2 = "./dataset/forw_posture/forward-"
+    for img in os.listdir(load_img2):
         
-        aa = load_img + img
+        aa = load_img2 + img
         cap = cv.imread(aa, cv.IMREAD_COLOR)
 
         cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
         cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
-        # cv.imwrite(save_img+img, cap)
-        print("{}번째 이미지 로드 완료".format(count))
-        count += 1
+
+    load_img1 = "./dataset/corr-samples/"
+    save_img1 = "./dataset/corr_posture/correct-"
+
+    for img in os.listdir(load_img1):
+        
+        aa = load_img1 + img
+        cap = cv.imread(aa, cv.IMREAD_COLOR)
+
+        cap = output_keypoints(frame=cap, net=net, BODY_PARTS=BODY_PARTS)
+        cap = output_keypoints_with_lines(frame=cap, POSE_PAIRS=POSE_PAIRS)
 
 # 키포인트를 저장할 빈 리스트
 points = []
-fx_list = []
-# 눈과 어깨 중점선
-fy_cen_list = []
-# 오른쪽 눈과 어깨 중점선
-fy_res_list = []
-# 왼쪽 눈과 어깨 중점선
-fy_les_list = []
-# 코와 목 연결선
-fy_nn_list = []
+y_list = []
 
-output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weightsFile_coco, BODY_PARTS=BODY_PARTS_COCO, POSE_PAIRS=POSE_PAIRS_COCO)
+output_keypoints_with_lines_video(proto_file=protoFile_coco, weights_file=weightsFile_coco, BODY_PARTS=BODY_PARTS_COCO, POSE_PAIRS=POSE_PAIRS_COCO, net=net)
 
 cv.waitKey(0) # esc 입력시 종료
 cv.destroyAllWindows()
-
-import pandas as pd
-
-forw_X = pd.DataFrame(fx_list, columns=["f_X"])
-forw_cen_Y = pd.DataFrame(fy_cen_list, columns=["cen_Y"])
-forw_res_Y = pd.DataFrame(fy_res_list, columns=["res_Y"])
-forw_les_Y = pd.DataFrame(fy_les_list, columns=["les_Y"])
-forw_nn_Y = pd.DataFrame(fy_nn_list, columns=["nn_Y"])
-
-forw_total = forw_X.join(forw_cen_Y, how="right")
-forw_total = forw_total.join(forw_res_Y, how="right")
-forw_total = forw_total.join(forw_les_Y, how="right")
-forw_total = forw_total.join(forw_nn_Y, how="right")
-
-pd.to_csv("forw_total.csv", encoding="utf-8")
-print("Done")

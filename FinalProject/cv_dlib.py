@@ -28,13 +28,13 @@ def detect(gray, frame):
         # 원하는 포인트 넣음 (현재 전부)
         landmarks_display = landmarks[0:68]
         
-        # 양 턱 시작, 턱 끝, 코 끝
-        # want_point.append(landmarks[JAWLINE_POINTS[0]])
-        # want_point.append(landmarks[JAWLINE_POINTS[8]])
-        # want_point.append(landmarks[JAWLINE_POINTS[16]])
-        # want_point.append(landmarks[NOSE_POINTS[3]])
-        # 원하는 부위 출력
-        #landmarks_display = want_point
+        #양 턱 시작, 턱 끝, 코 끝
+        want_point.append(landmarks[JAWLINE_POINTS[0]])
+        want_point.append(landmarks[JAWLINE_POINTS[8]])
+        want_point.append(landmarks[JAWLINE_POINTS[16]])
+        want_point.append(landmarks[NOSE_POINTS[3]])
+        #원하는 부위 출력
+        landmarks_display = want_point
         
         # 포인트 출력
         for idx, point in enumerate(landmarks_display):
@@ -45,24 +45,34 @@ def detect(gray, frame):
     return frame
 
 # 웹캠 이미지 가져오기
-video_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+# video_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
-while True:
-    # 웹캠 이미지 프레임 화
-    ret, frame = video_capture.read()
-    # 좌우 반전
-    frame = cv2.flip(frame,1)
-    # 그레이스케일 변환
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+# while True:
+#     # 웹캠 이미지 프레임 화
+#     ret, frame = video_capture.read()
+#     # 좌우 반전
+#     frame = cv2.flip(frame,1)
+#     # 그레이스케일 변환
+#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # 얼굴 눈 찾기
-    canvas = detect(gray, frame)
-    # 이미지 보여주기
-    cv2.imshow("haha", canvas)
+#     # 얼굴 눈 찾기
+#     canvas = detect(gray, frame)
+#     # 이미지 보여주기
+#     cv2.imshow("haha", canvas)
     
-    # q 누르면 종료
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+#     # q 누르면 종료
+#     if cv2.waitKey(1) & 0xFF == ord("q"):
+#         break
+img_path = "images.jpg"
 
-video_capture.release()
+
+img = cv2.imread(img_path, cv2.IMREAD_COLOR)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+canvas = detect(gray, img)
+
+cv2.imshow("test", canvas)
+
+
+# video_capture.release()
+cv2.waitKey()
 cv2.destroyAllWindows()

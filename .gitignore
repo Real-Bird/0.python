@@ -25,3 +25,4 @@ checkpoint
 *.xml
 *.bin
 *js
+*.pb
