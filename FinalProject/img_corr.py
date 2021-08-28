@@ -184,12 +184,14 @@ def output_keypoints_with_lines(frame, POSE_PAIRS):
             cy_cen_list.append(abs(cen_eyes_Y - cen_sholder_Y))
             #눈 간격
             cx_list.append(abs(points[4][0] + points[5][0]))
-            # 왼쪽 눈과 어깨 연결선
-            cy_les_list.append(abs(points[4][1]-points[2][1]))
-            # 오른쪽 눈과 어깨 연결선
-            cy_res_list.append(abs(points[5][1]-points[3][1]))
             # 코와 목 연결선    
             cy_nn_list.append(abs(points[0][1]-points[1][1]))
+            if abs(points[4][1]-points[2][1]) != 0 and abs(points[5][1]-points[3][1]):
+                # 왼쪽 눈과 어깨 연결선
+                cy_les_list.append(abs(points[4][1]-points[2][1]))
+                # 오른쪽 눈과 어깨 연결선
+                cy_res_list.append(abs(points[5][1]-points[3][1]))
+            
             # 턱과 어깨 중점 연결선
             # cy_js_list.append(abs(points[6][1]-cen_sholder_Y))
     
@@ -254,5 +256,5 @@ corr_total = corr_total.join(corr_res_Y, how="right")
 corr_total = corr_total.join(corr_les_Y, how="right")
 corr_total = corr_total.join(corr_nn_Y, how="right")
 
-pd.to_csv("corr_total.csv", encoding="utf-8")
+corr_total.to_csv("corr_total.csv", encoding="utf-8")
 print("Done")
