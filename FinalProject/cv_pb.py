@@ -3,7 +3,7 @@ import cv2 as cv
 import imutils
 
 t_vgg_pb = "D:/jb_python/FinalProject/zz/t_vgg_model_v1.pb"
-face_cascade = cv.CascadeClassifier('./dataset/tn_model/haarcascade_frontalface_default.xml')
+face_cascade = cv.CascadeClassifier('D:/jb_python/FinalProject/tn_model/haarcascade_frontalface_default.xml')
 
 def face_detect(frame, cascade, net):
 

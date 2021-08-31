@@ -26,3 +26,4 @@ checkpoint
 *.bin
 *js
 *.pb
+*.pkl
