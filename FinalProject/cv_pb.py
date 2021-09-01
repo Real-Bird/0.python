@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 import imutils
 
-t_vgg_pb = "D:/jb_python/FinalProject/zz/t_vgg_model_v1.pb"
+t_vgg_pb = "D:/jb_python/FinalProject/zz/inception_v3_last.pb"
 face_cascade = cv.CascadeClassifier('D:/jb_python/FinalProject/tn_model/haarcascade_frontalface_default.xml')
 
 def face_detect(frame, cascade, net):
@@ -16,7 +16,7 @@ def face_detect(frame, cascade, net):
     if faces_cnt != len(faces) :
             faces_cnt = len(faces)
             if faces_cnt != 0 :
-                print("현재 검출된 얼굴 수 : ", str(faces_cnt))
+                # print("현재 검출된 얼굴 수 : ", str(faces_cnt))
                 frame = t_predict(frame, net)
     else:
         cv.putText(frame, "not found face.", (50, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1, lineType=cv.LINE_AA)

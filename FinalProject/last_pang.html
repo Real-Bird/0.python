@@ -60,24 +60,24 @@
         for (let i = 0; i < maxPredictions; i++) { // and class labels
             labelContainer.appendChild(document.createElement("div"));
         }
-        // if (webcam.canvas) {
-		// 			ctx.drawImage(
-		// 				webcam.canvas,
-		// 				0,
-		// 				0,
-		// 				webcam.canvas.width,
-		// 				webcam.canvas.height
-		// 			);
+        if (webcam.canvas) {
+					ctx.drawImage(
+						webcam.canvas,
+						0,
+						0,
+						webcam.canvas.width,
+						webcam.canvas.height
+					);
 					
-		// 			// 가이드라인 그리기
-		// 			var line_img = document.getElementById("head_shoulder_line_img")		
-		// 			ctx.drawImage(
-		// 				line_img,
-		// 				0,
-		// 				0,
-		// 				webcam.canvas.width,
-		// 				webcam.canvas.height
-		// 			)};
+					// 가이드라인 그리기
+					var line_img = document.getElementById("head_shoulder_line_img")		
+					ctx.drawImage(
+						line_img,
+						0,
+						0,
+						webcam.canvas.width,
+						webcam.canvas.height
+					)};
     }
 
     

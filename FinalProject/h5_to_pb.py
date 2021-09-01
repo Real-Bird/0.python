@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
 import numpy as np
 
-model = keras.models.load_model('./tn_model/last_model.h5')
+model = keras.models.load_model('D:/jb_python/FinalProject/tn_model/inception_v3_last.h5')
 
 
 # Convert Keras model to ConcreteFunction
@@ -31,8 +31,8 @@ print(frozen_func.outputs)
 # Save frozen graph from frozen ConcreteFunction to hard drive
 # serialize the frozen graph and its text representation to disk.
 tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
-                  logdir="./zz/",
-                  name="last_model.pb",
+                  logdir="D:/jb_python/FinalProject/zz/",
+                  name="inception_v3_last.pb",
                   as_text=False)
 
 #Optional

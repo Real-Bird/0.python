@@ -27,3 +27,4 @@ checkpoint
 *js
 *.pb
 *.pkl
+/Teachable-Machine-AI-Fitness-Trainer-master/*
