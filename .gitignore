@@ -28,3 +28,7 @@ checkpoint
 *.pb
 *.pkl
 /Teachable-Machine-AI-Fitness-Trainer-master/*
+/Ninja_Turtle-master/*
+*.tflite
+*.css
+*.mp3
