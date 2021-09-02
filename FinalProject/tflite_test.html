@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <!-- Semantic UI Library를 추가합니다 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+    />
+    <!-- 하단에 작성한 index.css CSS 파일을 추가합니다 -->
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <title>My Project</title>
+  </head>
+  <body>
+   
+    <div class="ui one column centered grid" style="margin: 100px 0">
+      <div class="app_container">
+        <h3>Tensorflowjs MobileNet Project</h3>
+        <div class="ui card">
+          <div class="stream">
+            <video
+              width="320"
+              height="240"
+              autoplay
+              playsinline
+              muted
+              id="player"
+            ></video>
+          </div>
+          <div class="content">
+            <div class="button_container">
+              <button class="ui primary button" id="capture">Capture</button>
+              <button class="ui button" id="stop">Stop</button>
+            </div>
+            <div class="ui sub header">Result</div>
+            <div class="description">
+              <div id="console"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        // JavaScript
+
+ 
+
+      var player = document.getElementById("player");
+      var captureButton = document.getElementById("capture");
+      var stopButton = document.getElementById("stop");
+
+      var handleSuccess = function (stream) {
+        player.srcObject = stream;
+      };
+
+      navigator.mediaDevices.getUserMedia({ video: true }).then(handleSuccess);
+
+      stopButton.addEventListener("click", function () {
+        stream = player.srcObject;
+        tracks = stream.getTracks();
+        tracks.forEach(function (track) {
+          track.stop();
+        });
+        player.srcObject = null;
+      });
+      captureButton.addEventListener("click", async function () {
+        net = await tf.loadLayersModel('./zz/model.json');
+        console.log("Successfully loaded model");
+
+        const webcam = await tf.data.webcam(player, {
+          resizeWidth: 224,
+          resizeHeight: 224,
+        });
+        const img = await webcam.capture();
+  let tensor = tf.browser.fromPixels(player)
+    .resizeNearestNeighbor([224, 224])
+    .toFloat()
+    .expandDims();
+        
+        let predictions = await net.predict(tensor).data();
+        console.log(predictions)
+        const result = await net.predict(tensor);
+        console.log(result)
+
+        
+        if (result < 0.5){
+          document.getElementById("console").innerText = 'prediction: correct'
+        } else {
+          document.getElementById("console").innerText = 
+          'prediction: forward'
+        } 
+      
+
+        img.dispose();
+      });
+    </script>
+  </body>
+</html>

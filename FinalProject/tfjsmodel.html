@@ -33,7 +33,6 @@
         // or files from your local hard drive
         // Note: the pose library adds "tmImage" object to your window (window.tmImage)
         model = await tmImage.load(modelURL, metadataURL);
-        console.log(model)
         maxPredictions = model.getTotalClasses();
 
         // Convenience function to setup a webcam

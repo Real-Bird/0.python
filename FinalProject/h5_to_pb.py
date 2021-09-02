@@ -30,13 +30,13 @@ print(frozen_func.outputs)
 
 # Save frozen graph from frozen ConcreteFunction to hard drive
 # serialize the frozen graph and its text representation to disk.
-tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
-                  logdir="D:/jb_python/FinalProject/zz/",
-                  name="inception_v3_last.pb",
-                  as_text=False)
+# tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
+#                   logdir="D:/jb_python/FinalProject/zz/",
+#                   name="inception_v3_last.pb",
+#                   as_text=False)
 
 #Optional
-# tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
-#                   logdir="./zz/",
-#                   name="t_vgg_model_d1024.pbtxt",
-#                 as_text=True)                  
+tf.io.write_graph(graph_or_graph_def=frozen_func.graph,
+                  logdir="D:/jb_python/FinalProject/zz/",
+                  name="inception_v3_last.pbtxt",
+                as_text=True)                  
