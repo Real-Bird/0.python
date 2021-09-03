@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css">
     <title>Stop The TurtleNeck</title>
     <link rel="stylesheet" href="style.css">
-</head>
+</head> 
 <body>
     <div class="container mt-5">
         <div class="frame">
@@ -60,20 +60,14 @@
         // the link to your model provided by Teachable Machine export panel
         const URL = "https://teachablemachine.withgoogle.com/models/Z7ObjYThE/";  
         let model, webcam, ctx, labelContainer, maxPredictions;
-        let status = "corr"
+        let status = "";
+        let st_status = "";
         let count = 10_000;
-        let stTime = 0;
-        let endTime = 0;
-        let corr_endTime = 0;
-        let forw_endTime = 0;
-        let corr_timerStart;
-        let forw_timerStart;
-        let corr_sec;
-        let forw_sec;
-        let corr_nowTime;
-        let forw_nowTime;
+        let start_count = 0;
+        let after_count = 0;
         
         async function init() {
+            
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
 
@@ -99,9 +93,31 @@
             ctx = canvas.getContext("2d");
             labelContainer = document.getElementById("label-container");
             for (let i = 0; i < maxPredictions; i++) { // and class labels
-                labelContainer.appendChild(document.createElement("div"));
+            labelContainer.appendChild(document.createElement("div"));
             }
         
+        async function start_predict(){
+            const st_pred = await model.predict(webcam.canvas);
+            if (st_pred[0].probability.toFixed(2) == 1.00){
+                return st_pred[0].className;
+            } else {
+                return st_pred[1].className;
+            }
+        }
+            // if (st_staus == "corr"){
+            //     const co_audio = new Audio('1.mp3');
+            //     co_audio.play();
+            // } else if (st_status == "forw"){
+            //     const fo_audio = new Audio('result1.mp3');
+            //     fo_audio.play();
+            //     $("#timestamp").html(after_count);
+            // }  
+            
+        async function aa(){
+            let ss = await start_predict()
+            console.log("s = ", ss)
+        }
+        aa()
 
         async function loop(timestamp) {
             webcam.update(); // update the webcam frame
@@ -109,62 +125,38 @@
             window.requestAnimationFrame(loop);
             
         }
-        if(!stTime) {
-            stTime = Date.now(); // 최초 START
-        } else if(status == "forw"){
-            stTime += (Date.now() - corr_endTime) // RESTART
-        } else if(status == "corr"){
-            stTime += (Date.now() - forw_endTime) // RESTART
-        }
-
+        
         async function predict() {
+            
             // Prediction #1: run input through posenet
             // estimatePose can take in an image, video or canvas html element
             // Prediction 2: run input through teachable machine classification model
             const prediction = await model.predict(webcam.canvas);
            
-            if (prediction[0].probability.toFixed(2) > prediction[1].probability.toFixed(2)) {
-                status = "corr";
-                forw_endTime = Date.now();
-                if(status == "corr"){
-                corr_timerStart = setInterval(function() {
-                corr_nowTime = Date.now() - stTime;
-                corr_sec = parseInt(corr_nowTime/1000);
-                }, 1000);
-                document.getElementById('timestamp').innerText = corr_sec;
-                if (corr_sec % 10 == 0){
-                    document.getElementById('counter').innerText = count + 1000;
-                } else if (corr_sec % 60 <= 20){
-                    clearInterval(corr_timerStart);
-                    status = "forw";
-                    // stTime = 0;
-                    return status;
+            if (prediction[0].probability.toFixed(2) > 0.8) {
+                if (status == "corr") {
+                const corr_audio = new Audio('0.mp3');
+                corr_audio.play();
+                
                 }
-            }
-            } else if (prediction[1].probability.toFixed(2) > prediction[0].probability.toFixed(2)) {
                 status = "forw";
-                corr_endTime = Date.now();                
-                if (status == "forw") {
-                forw_timerStart = setInterval(function() {
-                forw_nowTime =  Date.now() - stTime;
-                forw_sec = parseInt(forw_nowTime/1000);
-                }, 1000);
-                document.getElementById('timestamp').innerText = forw_sec;
-                if (forw_sec % 10 == 0){
-                    const audio = new Audio('result1.mp3');
-                    audio.play();
-                    
-                    document.getElementById('counter').innerText = count - 1000;
-
-                } else if (forw_sec % 60 <= 20){
-                    clearInterval(forw_timerStart);
-                    status = "corr";
-                    // stTime = 0;
-                    return status;
-                }
-            } 
+                
+            } else if (prediction[1].probability.toFixed(2) == 1.00) {
+                if(status == "forw"){
+                const forw_audio = new Audio('result1.mp3');
+                after_count += 1;
+                count -= 1000;
+                forw_audio.play();
+                $("#counter").html(count);
+                $("#timestamp").html(after_count);
+                
             }
-             
+                status = "corr";
+                
+            } else {
+                status = "";
+            }
+              
             if ( count <= 0){
                     count = 0;
                     $('#counter').html(count);
@@ -184,20 +176,22 @@
 						webcam.canvas.width,
 						webcam.canvas.height
 					);
+            }
+            return status;
         }
-        
     }
-        }
+
         
         
+        
+    
+    
             
 
     const stopbtn = document.getElementById("stopbtn")
         stopbtn.addEventListener("click", stop)
         async function stop(){
             webcam.stop();
-            Date.stop();
-            
             
         }
         

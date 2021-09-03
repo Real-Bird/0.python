@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <video id="videoInput" style="display:none"></video>
+    <canvas id="videoOutput"></canvas>
+    <div id="label"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+<script>
+     var w = 320, h = 240;
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  var constraints = {audio: false, video: true};
+  var video = document.getElementById("videoInput");
+  video.width = w;
+  video.height = h;
+  function successCallback(stream){
+  	video.srcObject = stream;
+  	video.play();
+  }
+  function errorCallback(error){
+   	console.log(error);
+  }
+  navigator.getUserMedia(constraints, successCallback, errorCallback);
+	var canvas = document.getElementById("videoOutput");
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext("2d");
+  function processImage(){
+        ctx.drawImage(video, 0, 0, w, h);
+        setTimeout(processImage, 1);
+  }
+  processImage();
+
+  function stream(){
+    setInterval(sendImage, 30);
+  }
+  async function tpredict(){
+    const model = await tf.loadLayersModel('./tn_model/out_put/model.json');
+    console.log(model)
+    const webcam = await tf.data.webcam(video, {
+    resizeWidth: 224,
+    resizeHeight: 224,
+    });
+    let image = await webcam.capture();
+    console.log(image.shape[0])
+    const out = model.predict(tf.tensor([image]))
+    document.getElementById("label").innerHTML = out;
+  }   
+  tpredict()
+</script>
+    
+</html>
