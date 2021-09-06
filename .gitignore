@@ -32,3 +32,4 @@ checkpoint
 *.tflite
 *.css
 *.mp3
+/FinalProject/keras-caffe-converter-master/*

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="start" onclick="interval();">시작</button>
+    <button id="stop" onclick="stop();">종료</button>
+    <div id="view"></div>
+</body>
+<script>
+    let st = new Date(Date.now());
+    const audio = new Audio('1.mp3')
+    function timer(){
+        let ed = new Date(Date.now());
+        let time = new Date(ed - st);
+        if (time % 10 == 0){
+            audio.play();
+        }
+        console.log(time.getSeconds());
+        document.getElementById("view").innerHTML = time.getSeconds();
+    }
+
+    function interval(){
+        setInterval(timer, 1000);
+    }
+
+    function stop(){
+        clearInterval(interval);
+    }
+</script>
+</html>

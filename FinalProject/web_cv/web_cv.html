@@ -21,8 +21,12 @@
     <div id="label"></div>
     
 </body>
-<script async src="https://docs.opencv.org/4.5.0/opencv.js" type="text/javascript"></script>
+<!-- <script async src="https://docs.opencv.org/4.5.0/opencv.js" type="text/javascript"></script> -->
+<!-- <script src="js/utils.js" type="text/javascript"></script> -->
+  
 <script type='text/javascript'>
+try {
+function main(){
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 var video = document.getElementById('test-video'); 
@@ -50,13 +54,15 @@ let frame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
         context.restore();
         requestAnimationFrame(loop);
     })();
-var net;
-    function loadModel(){
-        var weights = "zz/inception_v3_last.pb"
-        net = cv.readNetFromTensorflow(weights)
-    }
+    var net;
+    function loadModel(callback){
+        var weights = "https://raw.githubusercontent.com/Real-Bird/pb/master/vgg19_transfer.pb";
+            net = cv.readNetFromTensorflow(weights)
+        callback();
+        }
 
     function predictPose(frame){
+        loadModel();
         blob = cv.blobFromImage(frame, 1, { width: 224, height: 224 }, [0, 0, 0, 0], false, false);
         net.setInput(blob);
         var out = net.forward();
@@ -70,7 +76,18 @@ var net;
         }
         document.getElementById("label").innerHTML = label;
     }
+    predictPose();
+}
+} catch {
+    console.log("err")
+}
 
-
+    function onOpenCvReady() {
+      cv['onRuntimeInitialized'] = () => {
+        main();
+      }
+    }
+    
 </script>
+<script async src="js/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 </html>

@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 import imutils
 
-t_vgg_pb = "D:/jb_python/FinalProject/zz/inception_v3_last.pb"
+t_vgg_pb = "D:/jb_python/FinalProject/tn_model/aa/InceptionV3.pb"
 face_cascade = cv.CascadeClassifier('D:/jb_python/FinalProject/tn_model/haarcascade_frontalface_default.xml')
 
 def face_detect(frame, cascade, net):

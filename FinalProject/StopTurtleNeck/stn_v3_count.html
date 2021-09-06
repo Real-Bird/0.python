@@ -96,14 +96,16 @@
             labelContainer.appendChild(document.createElement("div"));
             }
         
-        async function start_predict(){
-            const st_pred = await model.predict(webcam.canvas);
-            if (st_pred[0].probability.toFixed(2) == 1.00){
-                return st_pred[0].className;
-            } else {
-                return st_pred[1].className;
-            }
-        }
+        // async function start_predict(){
+        //     const st_pred = await model.predict(webcam.canvas);
+        //     if (st_pred[0].probability.toFixed(2) == 1.00){
+        //         status = st_pred[0].className;
+        //         return status;
+        //     } else {
+        //         status = st_pred[1].className;
+        //         return stauts;
+        //     }
+        // }
             // if (st_staus == "corr"){
             //     const co_audio = new Audio('1.mp3');
             //     co_audio.play();
@@ -113,35 +115,34 @@
             //     $("#timestamp").html(after_count);
             // }  
             
-        async function aa(){
-            let ss = await start_predict()
-            console.log("s = ", ss)
-        }
-        aa()
+        // async function aa(){
+        //     let ss = await start_predict()
+        //     console.log("s = ", ss)
+        // }
+        // aa()
 
         async function loop(timestamp) {
             webcam.update(); // update the webcam frame
-            await predict();
+            await predict(); 
             window.requestAnimationFrame(loop);
-            
         }
         
         async function predict() {
-            
             // Prediction #1: run input through posenet
             // estimatePose can take in an image, video or canvas html element
             // Prediction 2: run input through teachable machine classification model
             const prediction = await model.predict(webcam.canvas);
            
-            if (prediction[0].probability.toFixed(2) > 0.8) {
+            if (prediction[0].probability.toFixed(2) > 0.9) {
                 if (status == "corr") {
                 const corr_audio = new Audio('0.mp3');
+                console.log(0);
                 corr_audio.play();
                 
                 }
                 status = "forw";
                 
-            } else if (prediction[1].probability.toFixed(2) == 1.00) {
+            } else if (prediction[1].probability.toFixed(2) > 0.9) {
                 if(status == "forw"){
                 const forw_audio = new Audio('result1.mp3');
                 after_count += 1;
@@ -177,7 +178,6 @@
 						webcam.canvas.height
 					);
             }
-            return status;
         }
     }
 

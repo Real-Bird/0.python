@@ -110,7 +110,7 @@
             window.requestAnimationFrame(loop);
             
         }
-        let loop_Interval = setInterval(loop, 10000)
+        
         if(!stTime) {
             stTime = Date.now(); // 최초 START
         } else if(status == "forw"){
@@ -138,8 +138,9 @@
             if(status == "corr"){
                 
                 corr_timerStart = setInterval(function() {
-                console.log(2)
-                corr_sec = parseInt(corr_nowTime/1000);
+                
+                corr_sec = parseInt(corr_nowTime.getSeconds());
+                console.log(corr_sec)
                 }, 1000);
                 document.getElementById('timestamp').innerText = corr_sec;
                 if (corr_sec % 10 == 0){  
@@ -157,29 +158,25 @@
             } else if (status == "forw") {
                 // clearInterval(corr_timerStart);
                 forw_timerStart = setInterval(function() {
-                console.log(1)
-                forw_sec = parseInt(forw_nowTime/1000);
+                
+                forw_sec = forw_nowTime.getSeconds();
+                console.log(forw_sec)
                 }, 1000);
                 document.getElementById('timestamp').innerText = forw_sec;
                 if (forw_sec % 10 == 0){
                     const audio = new Audio('result1.mp3');
                     setTimeout(audio.play(), 1000);
-                    
-                    
                     document.getElementById('counter').innerText = count - 1000;
                     document.getElementById('timestamp').innerText = "0";
                     // clearInterval(forw_timerStart);
                 } else if (forw_sec % 60 <= 20 && status == "corr"){
-                    
                     status = "corr";
                     forw_sec = 0;
                     // clearInterval(forw_timerStart);
                     // stTime = 0;
                 }
             } 
-            
-            
-             
+
             if ( count <= 0){
                     count = 0;
                     $('#counter').html(count);
