@@ -106,7 +106,7 @@
   </main>
   <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gpu.js/1.10.4/gpu.min.js"></script>
   
   <script type='text/javascript'>
 
@@ -117,11 +117,13 @@
 
     function loadModel(callback){
       let utils = new Utils('');
-      let weights = "inception_v3_last.pb";
-      utils.createFileFromUrl("inception_v3_last", weights, () => {
-      document.getElementById('status').innerHTML = 'Downloading inception_v3_last.pb';
-       net = cv.readNetFromTensorflow("inception_v3_last"); // in the callback, load the cascade from file 
-       document.getElementById('status').innerHTML = 'Detecting Ready';
+      let weights = "https://raw.githubusercontent.com/Real-Bird/pb/master/vgg19_transfer.pb";
+      document.getElementById('status').innerHTML = 'Downloading vgg19_transfer.pb';
+      utils.createFileFromUrl("vgg19_transfer.pb", weights, () => {
+        document.getElementById('status').innerHTML = 'Detecting Ready';
+       net = cv.readNetFromTensorflow("vgg19_transfer.pb"); // in the callback, load the cascade from file 
+      //  net.setPreferableBackend(cv.DNN_BACKEND_CUDA)
+      // net.setPreferableTarget(cv.DNN_TARGET_CUDA)
        callback();
       });
     }
@@ -129,21 +131,18 @@
     
     //! [Run pose detection model]
     function predictPose(img) {
-     
+      
       
       let blob = cv.blobFromImage(img, 1.0 / 255, { width: 224, height: 224 }, [0, 0, 0, 0], false, false);
       
       net.setInput(blob);
       let out = net.forward();
-      console.log(out)
+      let result = out.data32F
 
-      let label = "";
-    if (out[0, 0] < 0.5){
-      label = "corr";
-    } else {
-      label = "forw";
-    } 
-      return label;
+      blob.delete();
+      out.delete();
+
+      return result;
     };
     //! [Run pose detection model]
     
@@ -173,22 +172,31 @@
       
       //! [Add a person]
         
-        
-function processVideo() {
-    cap.read(frame)
-    cv.cvtColor(frame, frameBGR, cv.COLOR_RGBA2BGR);
-    
-    let predPose = predictPose(frameBGR);
+      const FPS = 30;  // Target number of frames processed per second.
+      function processVideo() {
+        console.log(1)
+        let begin = Date.now();
+          cap.read(frame)
+          cv.cvtColor(frame, frameBGR, cv.COLOR_RGBA2BGR);
+          
+          let predPose = predictPose(frameBGR);
 
-    document.getElementById("label").innerHTML = predPose;
-    cv.cvtColor(frame, frameBGR, cv.COLOR_BGR2RGBA);
-    cv.imshow(output, frameBGR); // canvasOutput is the id of another <canvas>;
-      
-    // schedule next one.
-    let delay = 1000;
-    setTimeout(processVideo, delay);
-}
-// schedule first one.
+          let label = "";
+          if (predPose < 0.5){
+            label = "corr";
+          } else {
+            label = "forw";
+          } 
+
+          document.getElementById("label").innerHTML = label;
+          cv.cvtColor(frame, frameBGR, cv.COLOR_BGR2RGBA);
+          cv.imshow(output, frame); // canvasOutput is the id of another <canvas>;
+            
+          // schedule next one.
+          let delay = 1000 / FPS - (Date.now() - begin);
+          setTimeout(processVideo, delay);
+      }
+      // schedule first one.
 
         
       //! [Add a person]
@@ -196,6 +204,7 @@ function processVideo() {
       loadModel(function () {
         processVideo();
       });
+      
       }
 
     function onOpenCvReady() {

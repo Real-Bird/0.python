@@ -113,9 +113,9 @@
     
     const net = undefined;
     //! [Run pose detection model]
-    function predictPose(frame, size, scalar) {
+    function predictPose(frame) {
       
-      const blob = cv.blobFromImage(frame, 1.0/255, size, scalar, true, false);
+      const blob = cv.blobFromImage(frame, 1.0/255, {width:224, height:224}, [0,0,0,0], false, false);
       
       net.setInput(blob);
       const out = net.forward();
@@ -129,14 +129,15 @@
       let weights = "https://raw.githubusercontent.com/Real-Bird/pb/master/vgg19_transfer.pb";
       utils.createFileFromUrl("vgg19_transfer", weights, () => {
         net = cv.readNetFromTensorflow(weights); // in the callback, load the cascade from file 
+        callback();
       });
-      callback();
+      
     }
     
     function main() {
       
-      let size = new cv.Size(224, 224);
-      let scalar = new cv.Scalar(0, 0, 0);
+      // let size = new cv.Size(224, 224);
+      // let scalar = new cv.Scalar(0, 0, 0);
       // Create a camera object.
       let output = document.getElementById('output');
       let camera = document.createElement("video");
@@ -164,7 +165,7 @@
         cv.cvtColor(frame, frameBGR, cv.COLOR_RGBA2BGR);
         // console.log(cap)
 
-        let rects = predictPose(frame, size, scalar);
+        let rects = predictPose(frameBGR);
         let label = "";
         if (rects[0, 0] < 0.5){
           label = "corr";
