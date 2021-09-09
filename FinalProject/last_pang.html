@@ -12,11 +12,11 @@
 <body>
     <div>Teachable Machine Image Model</div>
 <button type="button" onclick="init()">Start</button>
-<!-- <video id="webcam-container" width="640px" height="480px"></video> -->
+<video id="webcam-container"></video>
 
-<div>
+<!-- <div>
     <canvas id="canvas"></canvas>
-</div>
+</div> -->
 <img src="head_shoulder_guideline.png" id="head_shoulder_line_img" style="display:none">
 <div id="label-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
@@ -33,6 +33,8 @@
     // Load the image model and setup the webcam
     async function init() {
         const modelURL = URL + "model.json";
+        // const modelURL = "./tn_model/out_put/model.json";
+        
         const metadataURL = URL + "metadata.json";
 
         // load the model and metadata
@@ -40,10 +42,11 @@
         // or files from your local hard drive
         // Note: the pose library adds "tmImage" object to your window (window.tmImage)
         model = await tmImage.load(modelURL, metadataURL);
+        console.log(model)
         maxPredictions = model.getTotalClasses();
 
         // Convenience function to setup a webcam
-        const size = document.getElementById('canvas').width;
+        const size = document.getElementById('webcam-container').width;
         const flip = true; // whether to flip the webcam
         webcam = new tmImage.Webcam(size, size, flip); // width, height, flip
         await webcam.setup(); // request access to the webcam
@@ -52,7 +55,7 @@
 
         // append/get elements to the DOM
         
-        const canvas = document.getElementById('canvas').appendChild(webcam.canvas);
+        const canvas = document.getElementById('webcam-container').appendChild(webcam.canvas);
         canvas.width = size;
         canvas.height = size;
         ctx = canvas.getContext('2d');

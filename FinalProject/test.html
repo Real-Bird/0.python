@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <video id="videoInput" style="display:none"></video>
+    <canvas id="videoOutput"></canvas>
+    <div id="label"></div> -->
+    <div id="display"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
+<!-- <script src="script.js"></script> -->
+<script>
+  
+    async function main(){
+    const model = await tf.loadLayersModel('https://raw.githubusercontent.com/Real-Bird/pb/master/json/model.json');
+    tfvis.show.modelSummary({name: 'Model Summary'}, model);
+//     console.log(model);
+//     var w = 320, h = 240;
+// navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+//   var constraints = {audio: false, video: true};
+//   var video = document.getElementById("videoInput");
+//   video.width = w;
+//   video.height = h;
+//   function successCallback(stream){
+//   	video.srcObject = stream;
+//   	video.play();
+//   }
+//   function errorCallback(error){
+//    	console.log(error);
+//   }
+//   navigator.getUserMedia(constraints, successCallback, errorCallback);
+// 	var canvas = document.getElementById("videoOutput");
+//   canvas.width = w;
+//   canvas.height = h;
+//   var ctx = canvas.getContext("2d");
+//   function processImage(){
+//         ctx.drawImage(video, 0, 0, w, h);
+//         setTimeout(processImage, 1);
+//   }
+//   processImage();
+
+//   function stream(){
+//     setInterval(sendImage, 30);
+//   }
+//   async function tpredict(){
+//     // const model = await tf.loadLayersModel('https://raw.githubusercontent.com/Real-Bird/pb/master/json/model.json');
+//     // console.log(model)
+//     const webcam = await tf.data.webcam(video, {
+//     resizeWidth: 224,
+//     resizeHeight: 224,
+//     }); 
+//     // let image = await webcam.capture();
+//     let tensor = tf.browser.fromPixels(video).resizeNearestNeighbor([224,224])
+//     // .toFloat();
+//     // const example = tf.fromPixels(webcam);  // for example
+//     // const prediction = model.predict(example);
+//     // let value = [];
+//     // for (let i = 0; i < 50176; i++){
+//     //     value.push(i)
+//     // }
+//     // const img = tf.tensor2d(value,[224, 224])
+//     let img = tensor.expandDims()
+//     const out = model.predict(img)
+//     console.log(out)
+//     document.getElementById("label").innerHTML = out;
+//   }   
+//   tpredict()
+
+
+// async function webcamLaunch() {  
+  const display = document.getElementById('display'); 
+const videoElement = document.createElement('video');
+    // Add element to display the webcam image. 
+    display.appendChild(videoElement);  
+    videoElement.width = 224;  
+    videoElement.height = 224;  
+    const webcamIterator = await tf.data.webcam(videoElement);  // img is a tensor showing the input webcam image.  
+    // const img = await webcamIterator.capture();
+  // }
+  
+  async function predPose(){
+    let tensor = await tf.browser.fromPixels(videoElement)
+    .resizeNearestNeighbor([224, 224])
+    .toFloat()
+    .expandDims();
+    // let dims = img.expandDims()
+    let out = model.predict(tensor).data()
+    console.log(out)
+    // out.print();
+  }
+  // setInterval(predPose, 1000);
+}
+    main();
+    
+</script>
+</html>

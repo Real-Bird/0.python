@@ -17,10 +17,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 <script>
-     var w = 320, h = 240;
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-  var constraints = {audio: false, video: true};
-  var video = document.getElementById("videoInput");
+  let w = 320, h = 240;
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  let constraints = {audio: false, video: true};
+  let video = document.getElementById("videoInput");
   video.width = w;
   video.height = h;
   function successCallback(stream){
@@ -31,10 +31,10 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia 
    	console.log(error);
   }
   navigator.getUserMedia(constraints, successCallback, errorCallback);
-	var canvas = document.getElementById("videoOutput");
+	let canvas = document.getElementById("videoOutput");
   canvas.width = w;
   canvas.height = h;
-  var ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d");
   function processImage(){
         ctx.drawImage(video, 0, 0, w, h);
         setTimeout(processImage, 1);
@@ -44,19 +44,34 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia 
   function stream(){
     setInterval(sendImage, 30);
   }
+  const FPS = 30;
   async function tpredict(){
-    const model = await tf.loadLayersModel('./tn_model/out_put/model.json');
-    console.log(model)
+    let begin = Date.now();
+    const model = await tf.loadLayersModel('https://raw.githubusercontent.com/Real-Bird/pb/master/json/model.json');
     const webcam = await tf.data.webcam(video, {
     resizeWidth: 224,
     resizeHeight: 224,
-    });
-    let image = await webcam.capture();
-    console.log(image.shape[0])
-    const out = model.predict(tf.tensor([image]))
-    document.getElementById("label").innerHTML = out;
+    }); 
+    // let image = await webcam.capture();
+    let image = tf.browser.fromPixels(video)
+    image = tf.image.resizeBilinear(image, [224,224])
+    image = tf.expandDims(image, 0)
+    const out = model.predict(image)
+    const predictionArray = out.dataSync()
+    const maxValue = predictionArray.valueOf(Math.max(...predictionArray))
+    // console.log("val",maxValue[0])
+    if (maxValue[0] == 0){
+      document.getElementById("label").innerHTML = "corr";
+    } else {
+      document.getElementById("label").innerHTML = "forw";
+    }
+    
+
+    let delay = 3000 // / FPS - (Date.now() - begin);
+    setTimeout(tpredict, delay);
   }   
-  tpredict()
+  // setInterval(tpredict, delay); 
+  tpredict();
 </script>
     
 </html>

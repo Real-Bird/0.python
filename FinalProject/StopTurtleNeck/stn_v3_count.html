@@ -68,13 +68,15 @@
         
         async function init() {
             
-            const modelURL = URL + "model.json";
+            // const modelURL = URL + "model.json";
+            const modelURL = "../tn_model/out_put/model.json";
             const metadataURL = URL + "metadata.json";
 
             // load the model and metadata
             // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
             // Note: the pose library adds a tmPose object to your window (window.tmPose)
             model = await tmImage.load(modelURL, metadataURL);
+            
             maxPredictions = model.getTotalClasses();
 
             // Convenience function to setup a webcam
@@ -132,8 +134,9 @@
             // estimatePose can take in an image, video or canvas html element
             // Prediction 2: run input through teachable machine classification model
             const prediction = await model.predict(webcam.canvas);
+            console.log(prediction[0].probability)
            
-            if (prediction[0].probability.toFixed(2) > 0.9) {
+            if (prediction[0].probability < 0.5) {
                 if (status == "corr") {
                 const corr_audio = new Audio('0.mp3');
                 console.log(0);
@@ -142,7 +145,7 @@
                 }
                 status = "forw";
                 
-            } else if (prediction[1].probability.toFixed(2) > 0.9) {
+            } else if (prediction[0].probability > 0.5) {
                 if(status == "forw"){
                 const forw_audio = new Audio('result1.mp3');
                 after_count += 1;
