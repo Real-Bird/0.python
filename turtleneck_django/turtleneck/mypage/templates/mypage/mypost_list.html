@@ -1,0 +1,91 @@
+{% extends 'mypage/base.html' %}
+    {% block main_area %}
+        <!--create post-->
+       
+        {% if request.session.loginuser %}
+        <a class="btn btn-info btn-sm float-right" href="/mypage/create_mypost/" role="button">
+            <i class="fas fa-pen"></i>&nbsp;&nbsp;New mypost</a>
+        {% endif %}
+        
+        <h1>My Page
+        {% if search_info%}<small class="text-muted">{{search_info}}</small>{% endif %}    
+        {% if category %}<span class="badge badge-secondary">{{category}}</span>{% endif%} </h1>
+        {% if tag %}<span class="badge badge-light"><i class="fas fa-tags"></i> {{tag}} {{tag.mypost_set.count}}</span>{% endif%}
+        <!-- mypage mypost-->
+        
+        {% if mypost_list.exists %}
+        {% for p in mypost_list %}
+        <!-- {{ p.author}} {{ user.username}} -->
+      
+        <div class="card mb-4" id="mypost-{{p.pk}}">
+            {% if p.head_image %}
+
+        
+            <a href="{{p.get_absolute_url}}"><img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}} head image" /></a>
+            {% endif%}
+            <div class="card-body">
+                {% if p.category %}
+                <span class="badge badge-secondary folat-right">{{p.category}}</span>
+                {% else %}
+                <span class="badge badge-secondary folat-right">기타</span>
+                {% endif %}
+                <div class="small text-muted">&nbsp;</div>
+                <h2 class="card-title h4" >{{p.title}}</h2>
+                {% if p.hook_text %}
+                <h5 class="text_muted">{{p.hook_text}}</h5>
+                {%endif%}
+                <p class="card-text">{{p.get_content_markdown | truncatewords_html:20 | safe}}</p>
+
+                
+                <!--tag-->
+                {% if p.tags.exists %}
+                <i class="fas fa-tags"></i>
+                    {% for tag in p.tags.iterator %}
+                    <a href="{{tag.get_absolute_url}}"><span class="badge badge-pill badge-light">{{tag}}</span></a>
+                    {% endfor %}
+                <br/>
+                <br/>
+                {% endif %}
+
+                <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
+            </div>
+            <div class="card-footer text-muted">
+                Postd on {{p.created_at}} by
+                <a href="#"> {{p.author | upper}}</a>
+            </div>
+        </div>
+        
+        {% endfor %}
+        {% else %} 
+        <h3>아직 게시물이 없습니다</h3>
+        {% endif %}
+      
+       
+
+    
+
+        <!-- Pagination-->
+        {% if is_paginated %}
+<nav aria-label="Pagination">
+    <hr class="my-0" />
+    <ul class="pagination justify-content-center my-4">
+        {% if page_obj.has_previous%}
+        <li class="page-item"><a class="page-link" href="?page={{page_obj.previous_page_number}}" >Newer</a></li>
+        {% else%}
+        <li class="page-item disabled"><a class="page-link" href="#" >Newer</a></li>
+        {% endif %}
+        <!-- <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+        <li class="page-item"><a class="page-link" href="#!">2</a></li>
+        <li class="page-item"><a class="page-link" href="#!">3</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+        <li class="page-item"><a class="page-link" href="#!">15</a></li> -->
+        {% if page_obj.has_next%}
+        <li class="page-item"><a class="page-link" href="?page={{page_obj.next_page_number}}">Older</a></li>
+        {%else%}
+        <li class="page-item disabled"><a class="page-link" href="#" >Older</a></li>
+        {% endif%}
+    </ul>
+    {%endif%}
+ 
+</nav>
+{% endblock %}

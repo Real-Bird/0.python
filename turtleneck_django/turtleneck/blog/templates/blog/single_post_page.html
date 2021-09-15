@@ -1,0 +1,168 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+{{ post.title }} - Blog
+{% endblock %}
+
+
+{% block main_area %}
+<div id="post-area">
+    {% if post.category %}
+    <span class="badge badge-secondary folat-right">{{post.category}}</span>
+    {% else %}
+    <span class="badge badge-secondary folat-right">기타</span>
+    {% endif %}
+
+
+    <!-- Post title-->
+    <h1 class="fw-bolder mb-1">{{post.title}}</h1>
+    <h5 class="text-muted">{{post.hook_text}}</h5>
+    <!--author-->
+    <p class="lead">
+        by
+        <a href="#">{{post.author | upper}}</a>
+    </p>
+    <hr>
+
+    {% if request.session.loginuser == post.author.user_name %}
+    <a class="btn btn-danger btn-sm float-right" href="/blog/delete_post/{{post.pk}}/" role="button">
+        <i class="fas fa-pen"></i>&nbsp; Delete post</a>
+    <a class="btn btn-info btn-sm float-right" style="margin-right: 5px; margin-bottom: 5px; " href="/blog/update_post/{{post.pk}}/" role="button">
+        <i class="fas fa-pen" ></i>&nbsp; Edit post</a>
+    {% endif %}
+
+
+
+    <!-- Post meta content-->
+    <div class="text-muted fst-italic mb-2">{{post.created_at}}
+
+        </header>
+        <!-- Preview image figure-->
+        <figure class="mb-4">
+            {% if post.head_image %}
+            <img class="img-fluid rounded" src="{{post.head_image.url}}" alt="..." />
+            {%endif%}
+            <hr>
+
+        </figure>
+
+    </div>
+
+
+
+    <!-- Post content-->
+    <section class="mb-5">
+        <p>{{post.get_content_markdown | safe}}</p>
+
+        <!--tag-->
+        {% if post.tags.exists %}
+        <i class="fas fa-fags"></i>
+        {% for tag in tags.all %}
+        <a href="{{tag.get_absolute_url }}" class="badge badge-light">{{tag}}</a>
+        {% endfor %}
+        <br />
+        <br />
+        {% endif %}
+    </section>
+
+
+    <!-- Comments section-->
+    <div id="comment-area">
+        <section class="mb-5">
+            <div class="card bg-light">
+                <div class="card-body">
+                    {% if request.session.loginuser %}
+                    <form id="comment-form" method="POST" action="{{post.get_absolute_url}}new_comment/">
+                        {% csrf_token %}
+                        <!-- Comment form-->
+                        <div class="mb-4">
+
+                            <div class="form-group">
+                                {{comment_form | crispy}}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                           
+                            
+                    </form>
+                    </div>
+                   
+                  
+                    {% else %}
+                
+                    <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal"
+                        data-target="#loginModal">Log in and leave a comment</a>
+            
+                     {% endif %}
+        
+
+            {% if post.comment_set.exists %}
+       
+            {% for comment in post.comment_set.iterator%}
+                    
+            <!-- Single comment-->
+            <div class="media mb-4" id="comment-{{comment.pk}}">
+                <div class="d-flex">
+                    <div class="flex-shrink-0"><img class="rounded-circle"
+                            src="{{comment.get_avatar_url}}" alt="{{comment.author}}" width="60px" /></div>
+                    <div class="ms-3">
+                        <!--comment update-->
+                        {% if request.session.loginuser == comment.author.user_name %}
+                        <div class="float-right">
+                            <a role="button" class="btn btn-sm btn-info" id="comment-{{comment.pk}}-update-btn"
+                                href="/blog/update_comment/{{comment.pk}}/">edit</a>
+
+                            <a role="button" href="#" id="comment-{{comment.pk}}=delete-modal-btn"
+                                class="btn btn-sm btn-danger" data-toggle="modal"
+                                data-target="#deleteCommentModal-{{comment.pk}}">delete</a>
+                        </div>
+                        <!--Modal-->
+                        <div class="modal fade" id="deleteCommentModal-{{comment.pk}}" tabindex="-1"
+                        role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="daleteModalLabel">Are you Sure?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <del>{{comment|linebreaks}}</del>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a role="button" class="btn btn-danger" href="/blog/delete_comment/{{comment.pk}}/">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                        {%endif%}
+
+
+                        <h5 class="fw-bold">&nbsp;&nbsp;{{comment.author.username}}&nbsp;&nbsp;<small
+                                class="text-muted">{{comment.created_at}}</small></h5>
+                        <p>{{comment.content|linebreaks}}</p>
+
+                        {% if comment.created_at != commnet.modified_at %}
+                        <p class="text-muted float-right"><small>Update: {{comment.modified_at}}</small></p>
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            {% endfor %}
+            {% endif %}
+    </div>
+</div>
+
+</div>
+</section>
+</div>
+{% endblock %}

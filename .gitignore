@@ -33,3 +33,4 @@ checkpoint
 *.css
 *.mp3
 /FinalProject/keras-caffe-converter-master/*
+*.gif

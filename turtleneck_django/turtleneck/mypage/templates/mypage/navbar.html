@@ -1,0 +1,87 @@
+{% load socialaccount %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light ">
+    <div class="container">
+    <a class="navbar-brand" href="/">turtleneck</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home </a>
+        </li>
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog/">community</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about_me/">about_us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notice/">notice</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        {% if request.session.loginuser %} 
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <!--user img-->
+          {% if user.socialaccount_set.all.0.get_avatar_url%}
+            <img class="rounded-circle" width="25px" src="{{user.socialaccount_set.all.0.get_avatar_url}}" alt="..">
+          {% else%}
+            <img class="rounded-circle" width="25px"  src="https://doitdjango.com/avatar/id/286/433f4a480e5e0199/svg/{{user.email}}">
+          {% endif %}
+          &nbsp;
+          
+          {{user.username}}
+          
+        </a>
+   
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/mypage/">My page</a>
+          <a class="dropdown-item" href="/accounts/logout/">Log Out</a>
+
+        </div>
+        </li>
+        {% else %}
+
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Login</a>
+        </li>
+        {% endif %}
+    </ul>
+    </div>
+    </div>
+</nav>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="loginModal"><i class="fas fa-sign-in-alt"></i>Log in</h5></i>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col=md-6">
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="{% provider_login_url 'google'%}"> <i class="fab fa-google"></i>&nbsp; Log in whith Google</a>
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="/accounts/login/"> <i class="far fa-envelope"></i>&nbsp; Log in whith Email</a>
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="/accounts/signup/"> <i class="far fa-envelope"></i>&nbsp; Sign up whith Email</a>
+                    </div>
+                </div>
+            </div>
+
+            
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        </div>
+    </div>

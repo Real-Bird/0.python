@@ -1,0 +1,72 @@
+{% extends 'mypage/base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+{{ mypost.title }} - Mypage
+{% endblock %}
+
+
+{% block main_area %}
+<div id="mypost-area">
+    {% if mypost.category %}
+    <span class="badge badge-secondary folat-right">{{mypost.category}}</span>
+    {% else %}
+    <span class="badge badge-secondary folat-right">기타</span>
+    {% endif %}
+
+
+    <!-- mypost title-->
+    <h1 class="fw-bolder mb-1">{{mypost.title}}</h1>
+    <h5 class="text-muted">{{mypost.hook_text}}</h5>
+    <!--author-->
+    <p class="lead">
+        by
+        <a href="#">{{mypost.author | upper}}</a>
+    </p>
+    <hr>
+    {% if request.session.loginuser | user == mypost.author %}
+
+    <a class="btn btn-danger btn-sm float-right" href="/mypage/delete_mypost/{{mypost.pk}}/" role="button">
+        <i class="fas fa-pen"></i>&nbsp; Delete mypost</a>
+    <a class="btn btn-info btn-sm float-right" href="/mypage/update_mypost/{{mypost.pk}}/" role="button">
+        <i class="fas fa-pen"></i>&nbsp; Edit mypost</a>
+    {% endif %}
+
+
+
+    <!-- mypost meta content-->
+    <div class="text-muted fst-italic mb-2">{{mypost.created_at}}
+
+        </header>
+        <!-- Preview image figure-->
+        <figure class="mb-4">
+            {% if mypost.head_image %}
+            <img class="img-fluid rounded" src="{{mypost.head_image.url}}" alt="..." />
+            {%endif%}
+            <hr>
+
+        </figure>
+
+    </div>
+
+
+
+    <!-- mypost content-->
+    <section class="mb-5">
+        <p>{{mypost.get_content_markdown | safe}}</p>
+
+        <!--tag-->
+        {% if mypost.tags.exists %}
+        <i class="fas fa-fags"></i>
+        {% for tag in tags.all %}
+        <a href="{{tag.get_absolute_url }}" class="badge badge-light">{{tag}}</a>
+        {% endfor %}
+        <br />
+        <br />
+        {% endif %}
+    </section>
+
+
+    </section>
+
+</div>
+{% endblock %}

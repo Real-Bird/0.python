@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title> About STOP_TURTLENECK</title>
+    <link rel="stylesheet" href="{% static 'blog/bootstrap/bootstrap.min.css' %}" media="screen">
+    <!-- <link rel="stylesheet" href="{% static 'single_pages/css/about_me.css' %}" media="screen"> -->
+    <script src="https://kit.fontawesome.com/fb58eed872.js" crossorigin="anonymous"></script>
+    <style>
+        h1 { margin-bottom:20px;}
+		h6 { margin-left:80px; }
+	</style>
+    <style type="text/css">
+        .my-box { border:1px solid; padding:20px 0 0 0; border-radius:0% 0% 0% 0%; margin: 20px 0 0 0; }
+    </style>
+</head>
+
+<body>
+    {% include 'blog/navbar.html'%}
+    <br/>
+          <div class="container">
+            <h1>About us 
+                {% if category %}<span class="badge badge-secondary">{{category}}</span>{% endif%} </h1>
+           <div class="my-box">
+            <div class="row">
+                <ul>
+                <li><p>Stop turtleneck은 CNN과 SVM을 기반으로 한 학습 모델을 사용하여 사용자들에게 거북목 자세를 경고하기 위한 시스템입니다.</p></li>
+                <li><p>수 만장의 데이터를 활용하여 정확도를 높였으며, 10초 이상 거북목 자세가 유지될 경우 경고음과 함께 포인트가 차감됩니다.</p></li>
+                <li><p>사용자들은 우리의 프로그램을 사용함으로써, 바른 자세를 유지하는데 도움이 될 것입니다.</p></li>
+                <li><p>프로그램 사용시 문의사항이 있으신 경우엔 아래의 담당자들에게 연락을 주시거나 사무실로 방문해 주세요.</p></li>
+                <li><p>평일 09:00 ~ 18:00 사이에 연락을 주시면 친절히 응답해 드리겠습니다.</p></li>
+                </ul>
+            </div>
+            </div>
+        <div class="my-box">
+          <div class="contact__address" style="margin: 20px 0 0 0;">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="contact__address__item">
+                        <h6>권영우</h6>
+                        <ul>
+                            <p><img src = "../../static/single_pages/images/a.jpg" width="130" height="130"></p>
+                            <li><p>웹 개발 담당</p></li>
+                            <li><p>+82) 010-0000-0000</p></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="contact__address__item">
+                        <h6>김진영</h6>
+                        <ul>
+                            <p><img src = "../../static/single_pages/images/b.jpg" width="130" height="130"></p>
+                            <li><p>모델 개발 담당</p></li>
+                            <li><p>+82) 010-0000-0000</p></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="contact__address__item">
+                        <h6>최우빈</h6>
+                            <ul>
+                            <p><img src = "../../static/single_pages/images/c.jpg" width="130" height="130"></p>
+                            <li><p>데이터 분석 담당</p></li>
+                            <li><p>+82) 010-0000-0000</p></li>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+            <div id="map" style="width:100%;height:400px; margin: 20px 20px 20px 0;">
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=16fa6962d25a035624e2ea5cc720f790&libraries=services"></script>
+        <script>
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = {
+                center: new kakao.maps.LatLng(37.56778286685991, 126.98229676426686), // 지도의 중심좌표
+                draggable: false,
+                level: 4 // 지도의 확대 레벨
+            };  
+        
+        // 지도를 생성합니다    
+        var map = new kakao.maps.Map(mapContainer, mapOption); 
+        
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+        
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch('서울시 중구 다동88', function(result, status) {
+        
+            // 정상적으로 검색이 완료됐으면 
+             if (status === kakao.maps.services.Status.OK) {
+        
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+        
+                // 결과값으로 받은 위치를 마커로 표시합니다
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+        
+                // 인포윈도우로 장소에 대한 설명을 표시합니다
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="width:250px; height:60px; border: 1px solid black; text-align:center;padding:6px 6px 0 6px;"><div style="padding: 0 0 5px 0;"><strong>비 전공자들 (09:00~18:00)</strong></div><div>서울시 중구 다동 88 동아빌딩</div></div>'
+                });
+                infowindow.open(map, marker);
+        
+                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                map.setCenter(coords);
+            } 
+        });    
+        </script>
+        </div>  
+        </div>
+          </div> 
+          </div>       
+        </section>
+
+    <div class="bottom">
+        {% include 'blog/footer.html' %}
+    </div>
+</body>
+
+</html>

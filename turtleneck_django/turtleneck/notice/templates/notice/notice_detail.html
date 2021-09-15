@@ -1,0 +1,50 @@
+{% extends 'notice/base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+{{ notice.title }} - Notice
+{% endblock %}
+
+
+{% block main_area %}
+<div id="notice-area">
+    {% if notice.category %}
+    <span class="badge badge-secondary folat-right">{{notice.category}}</span>
+    {% else %}
+    <span class="badge badge-secondary folat-right">기타</span>
+    {% endif %}
+
+
+    <!-- notice title-->
+    <h1 class="fw-bolder mb-1">{{notice.title}}</h1>
+    <h5 class="text-muted">{{notice.hook_text}}</h5>
+    <!--author-->
+    <p class="lead">
+        by
+        <a href="#">{{notice.author | upper}}</a>
+    </p>
+    <hr>
+    {% if request.session.loginuser and user == notice.author %}
+    <a class="btn btn-info btn-sm float-right" href="/notice/update_notice/{{notice.pk}}/" role="button">
+        <i class="fas fa-pen"></i>&nbsp; Edit notice</a>
+    {% endif %}
+
+
+
+    <!-- notice meta content-->
+    <div class="text-muted fst-italic mb-2">{{notice.created_at}}
+
+        </header>
+        <!-- Preview image figure-->
+        <figure class="mb-4">
+            {% if notice.head_image %}
+            <img class="img-fluid rounded" src="{{notice.head_image.url}}" alt="..." />
+            {%endif%}
+            <hr>
+
+        </figure>
+
+</div>
+</section>
+</div>
+
+{% endblock %}
